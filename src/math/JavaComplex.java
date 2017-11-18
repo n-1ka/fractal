@@ -44,4 +44,8 @@ public class JavaComplex implements Mcomplex {
 				(imag().mul(c.real()).sub(real.mul(c.imag()))).div(denom));
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%s + i*%s", real.toString(), imag.toString());
+	}
 }

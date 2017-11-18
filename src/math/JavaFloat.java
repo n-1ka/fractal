@@ -50,4 +50,8 @@ public class JavaFloat implements Mfloat {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return String.valueOf(value);
+	}
 }

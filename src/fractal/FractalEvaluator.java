@@ -1,4 +1,4 @@
-package main;
+package fractal;
 
 import java.awt.Color;
 
