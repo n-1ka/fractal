@@ -1,6 +1,6 @@
 package mandelbrot;
 
-import main.FractalFunction;
+import fractal.FractalFunction;
 import math.Mcomplex;
 
 public class DummyFractalFunction implements FractalFunction {

@@ -1,8 +1,10 @@
-package main;
+package fractal;
 
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 
 import math.Mcomplex;
 import math.Mfloat;
@@ -10,39 +12,76 @@ import math.Number;
 
 public class Fractal extends Canvas implements Zoomable {
 	
-	public static final double DEFAULT_X  = 0.0;
-	public static final double DEFAULT_Y  = 0.0;
-	public static final double DEFAULT_VS = 4.1;
+	private static final Mfloat DEFAULT_X  = Number.buildFloat(0.0);
+	private static final Mfloat DEFAULT_Y  = Number.buildFloat(0.0);
+	private static final Mfloat DEFAULT_VS = Number.buildFloat(4.1);
 
 	private Mfloat x, y, viewSize;
 	private int pixelSize;
 	private FractalEvaluator evaluator;
+	private List<FractalListener> listeners;
 	
-	public Fractal(double x, double y, double viewSize,
+	public Fractal(Mfloat x, Mfloat y, Mfloat viewSize,
 					int pixelSize, FractalEvaluator evaluator) {
-		this.x = Number.buildFloat(x);
-		this.y = Number.buildFloat(y);
-		this.viewSize = Number.buildFloat(viewSize);
+		this.x = x;
+		this.y = y;
+		this.viewSize = viewSize;
 		this.pixelSize = pixelSize;
 		this.evaluator = evaluator;
+		this.listeners = new ArrayList<>();
 	}
 	
 	public Fractal(int pixelSize, FractalEvaluator evaluator) {
-		this(DEFAULT_X, DEFAULT_X, DEFAULT_VS, pixelSize, evaluator);
+		this(DEFAULT_X, DEFAULT_Y, DEFAULT_VS, pixelSize, evaluator);
 	}
 	
 	public void setPixelSize(int pixelSize) {
 		this.pixelSize = pixelSize;
-		repaint();
+		fractalUpdated();
 	}
-	
+
+	public Mfloat getCenterX() {
+		return x;
+	}
+
+	public void setCenterX(Mfloat x) {
+		this.x = x;
+		fractalUpdated();
+	}
+
+	public Mfloat getCenterY() {
+		return y;
+	}
+
+	public void setCenterY(Mfloat y) {
+		this.y = y;
+		fractalUpdated();
+	}
+
+	public Mfloat getViewSize() {
+		return viewSize;
+	}
+
+	public void setViewSize(Mfloat viewSize) {
+		this.viewSize = viewSize;
+		fractalUpdated();
+	}
+
+	public void addFractalListener(FractalListener l) {
+		this.listeners.add(l);
+	}
+
+	public void removeFractalListener(FractalListener l) {
+		this.listeners.remove(l);
+	}
+
 	public int getPixelSize() {
 		return pixelSize;
 	}
 	
 	public void setFractalEvaluator(FractalEvaluator evaluator) {
 		this.evaluator = evaluator;
-		repaint();
+		fractalUpdated();
 	}
 
 	public FractalEvaluator getFractalEvaluator() {
@@ -109,8 +148,15 @@ public class Fractal extends Canvas implements Zoomable {
 		this.x = this.x.add(width.mul(Number.buildFloat(x)));
 		this.y = this.y.add(height.mul(Number.buildFloat(y)));
 		this.viewSize = viewSize.mul(Number.buildFloat(scale));
-		
+
+		fractalUpdated();
+	}
+
+	private void fractalUpdated() {
 		repaint();
+		for (FractalListener l : listeners) {
+			l.fractalUpdated(this);
+		}
 	}
 	
 }

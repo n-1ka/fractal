@@ -2,9 +2,9 @@ package mandelbrot;
 
 import java.awt.Color;
 
-import main.FractalFunction;
-import main.FractalDepthColorer;
-import main.FractalEvaluator;
+import fractal.FractalFunction;
+import fractal.FractalDepthColorer;
+import fractal.FractalEvaluator;
 import math.Mcomplex;
 import math.Mfloat;
 import math.Number;

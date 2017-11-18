@@ -2,7 +2,7 @@ package mandelbrot;
 
 import java.awt.Color;
 
-import main.FractalDepthColorer;
+import fractal.FractalDepthColorer;
 
 public class DummyFractalDepthColorer implements FractalDepthColorer {
 	
