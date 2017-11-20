@@ -3,7 +3,7 @@ package mandelbrot;
 import java.awt.Color;
 
 import fractal.FractalFunction;
-import fractal.FractalDepthColorer;
+import fractal.FractalDepthPainter;
 import fractal.FractalEvaluator;
 import math.Mcomplex;
 import math.Mfloat;
@@ -15,11 +15,11 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	
 	private int maxDepth;
 	private Mfloat edge;
-	private FractalDepthColorer colorer;
+	private FractalDepthPainter colorer;
 	private FractalFunction function;
 	
 	public MandelbrotFractalEvaluator(int maxDepth,
-										FractalDepthColorer colorer,
+										FractalDepthPainter colorer,
 										FractalFunction function) {
 		this.maxDepth = maxDepth;
 		this.colorer = colorer;
@@ -32,7 +32,70 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 		Mfloat imag = complex.imag();
 		return real.mul(real).add(imag.mul(imag));
 	}
-	
+
+	/**
+	 * @return Maximum function evaluation number.
+	 */
+	public int getMaxDepth() {
+		return maxDepth;
+	}
+
+	/**
+     * Change maximum evaluation number.
+	 * @param maxDepth - Positive integer
+	 */
+	public void setMaxDepth(int maxDepth) {
+		if (maxDepth <= 0)
+			maxDepth = 1;
+
+		this.maxDepth = maxDepth;
+	}
+
+	/**
+	 * @return Function divergence edge.
+	 */
+	public Mfloat getEdge() {
+		return edge;
+	}
+
+	/**
+	 * Set function divergence edge.
+	 * @param edge Mfloat
+	 */
+	public void setEdge(Mfloat edge) {
+		this.edge = edge;
+	}
+
+	/**
+	 * @return Fractal depth painter
+	 */
+	public FractalDepthPainter getColorer() {
+		return colorer;
+	}
+
+	/**
+	 * Updates depth painter
+	 * @param colorer
+	 */
+	public void setColorer(FractalDepthPainter colorer) {
+		this.colorer = colorer;
+	}
+
+	/**
+	 * @return Fractal function
+	 */
+	public FractalFunction getFunction() {
+		return function;
+	}
+
+	/**
+	 * Updates fractal function.
+	 * @param function Fractal function
+	 */
+	public void setFunction(FractalFunction function) {
+		this.function = function;
+	}
+
 	@Override
 	public Color evaluate(Mcomplex value) {
 		Mfloat edgeSquared = edge.mul(edge);
