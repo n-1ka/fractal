@@ -15,14 +15,14 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	
 	private int maxDepth;
 	private Mfloat edge;
-	private FractalDepthPainter colorer;
+	private FractalDepthPainter painter;
 	private FractalFunction function;
 	
 	public MandelbrotFractalEvaluator(int maxDepth,
-										FractalDepthPainter colorer,
+										FractalDepthPainter painter,
 										FractalFunction function) {
 		this.maxDepth = maxDepth;
-		this.colorer = colorer;
+		this.painter = painter;
 		this.function = function;
 		this.edge = Number.buildFloat(EDGE);
 	}
@@ -69,16 +69,16 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	/**
 	 * @return Fractal depth painter
 	 */
-	public FractalDepthPainter getColorer() {
-		return colorer;
+	public FractalDepthPainter getDepthPainter() {
+		return painter;
 	}
 
 	/**
 	 * Updates depth painter
-	 * @param colorer
+	 * @param painter
 	 */
-	public void setColorer(FractalDepthPainter colorer) {
-		this.colorer = colorer;
+	public void setDepthPainter(FractalDepthPainter painter) {
+		this.painter = painter;
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 			depth++;
 		}
 
-		return colorer.generateColor(depth, maxDepth);
+		return painter.generateColor(depth, maxDepth);
 	}
 
 }
