@@ -5,15 +5,18 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.*;
 
 import fractal.Fractal;
+import fractal.FractalDepthPainter;
 import fractal.FractalEvaluator;
 import fractal.FractalListener;
 import mandelbrot.DummyFractalFunction;
 import mandelbrot.DummyFractalDepthPainter;
+import mandelbrot.GrayFractalDepthPainter;
 import mandelbrot.MandelbrotFractalEvaluator;
 import math.Mfloat;
 import math.Number;
@@ -34,11 +37,24 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 	private static final int CANVAS_WIDTH = 1200;
 	private static final int CANVAS_HEIGHT = 700;
 
-	private static final int FLOAT_INPUT_SIZE = 14;
+	// Input size for Mfloats
+	private static final int FLOAT_INPUT_SIZE = 16;
+
+	// Depth painters
+    private static final String DEFAULT_PAINTER_NAME = "Default";
+    private static final FractalDepthPainter DEFAULT_PAINTER = new DummyFractalDepthPainter();
+    private static final Map<String, FractalDepthPainter> DEPTH_PAINTERS;
+
+    static {
+        DEPTH_PAINTERS = new HashMap<>();
+        DEPTH_PAINTERS.put(DEFAULT_PAINTER_NAME, DEFAULT_PAINTER);
+        DEPTH_PAINTERS.put("Gray", new GrayFractalDepthPainter());
+    }
 
 	private JTextField pixelSizeField;
 	private JTextField fractalDepthField;
 	private JTextField fractalEdgeField;
+	private JComboBox fractalPainterDropdown;
 	private JButton updateButton;
 
 	private JTextField fractalXField;
@@ -115,13 +131,20 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 			update();
         } else if (source == resetZoomButton) {
             resetFractalZoom();
+        } else if (source == fractalPainterDropdown) {
+            String painterName = (String) fractalPainterDropdown.getSelectedItem();
+            FractalDepthPainter painter = DEPTH_PAINTERS.get(painterName);
+            if (painter != null) {
+                evaluator.setDepthPainter(painter);
+                fractal.repaint();
+            }
         }
     }
 	
 	private static MandelbrotFractalEvaluator buildFractalEvaluator() {
 		return new MandelbrotFractalEvaluator(
                 DEFAULT_DEPTH,
-				new DummyFractalDepthPainter(),
+				DEFAULT_PAINTER,
 				new DummyFractalFunction());
 	}
 	
@@ -161,7 +184,18 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 
 		return res;
 	}
-	
+
+    private JComboBox buildFractalPainterDropdown() {
+        JComboBox<String> res = new JComboBox<>();
+        for (String name : DEPTH_PAINTERS.keySet()) {
+            res.addItem(name);
+        }
+        res.setSelectedItem(DEFAULT_PAINTER_NAME);
+
+        res.addActionListener(this);
+        return res;
+    }
+
 	private Component buildBottomUI() {
 		JPanel res = new JPanel();
 		res.setLayout(new FlowLayout());
@@ -180,6 +214,10 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 		fractalEdgeField = new JTextField(5);
 		fractalEdgeField.setText(evaluator.getEdge().toString());
 		res.add(fractalEdgeField);
+
+		res.add(new JLabel("Coloring: "));
+		fractalPainterDropdown = buildFractalPainterDropdown();
+		res.add(fractalPainterDropdown);
 
 		updateButton = new JButton("Update");
 		updateButton.addActionListener(this);
@@ -203,7 +241,7 @@ public class Main extends JFrame implements ActionListener, FractalListener {
         fractalDepthField.setText(String.valueOf(evaluator.getMaxDepth()));
         fractalEdgeField.setText(String.valueOf(evaluator.getEdge()));
     }
-	
+
 	private Main() {
 		setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
 		setLayout(new BorderLayout());
