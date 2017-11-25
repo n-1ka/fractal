@@ -2,6 +2,6 @@ package fractal;
 
 public interface FractalListener {
 
-    void fractalUpdated(Fractal f);
+    void fractalUpdated(FractalCanvas f);
 
 }
