@@ -93,7 +93,7 @@ public class Main extends JFrame implements ActionListener, FractalListener {
         evaluator.setMaxDepth(depth);
     }
 	
-	private void update() {
+	private void updateFractal() {
 	    Mfloat x, y, size;
 	    x = y = size = null;
 
@@ -128,7 +128,7 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 	public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == updateButton || source == updateCoordinatesButton) {
-			update();
+			updateFractal();
         } else if (source == resetZoomButton) {
             resetFractalZoom();
         } else if (source == fractalPainterDropdown) {
