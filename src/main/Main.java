@@ -10,7 +10,7 @@ import java.util.Map;
 
 import javax.swing.*;
 
-import fractal.FractalCanvas;
+import fractal.Fractal;
 import fractal.FractalDepthPainter;
 import fractal.FractalEvaluator;
 import fractal.FractalListener;
@@ -23,7 +23,7 @@ import math.Number;
 
 public class Main extends JFrame implements ActionListener, FractalListener {
 
-	// FractalCanvas constants
+	// Fractal constants
 	private static final int PIXEL_SIZE = 2;
 	private static final int DEFAULT_DEPTH = 1000;
 	private static final Mfloat DEFAULT_X = Number.buildFloat(0.0);
@@ -64,7 +64,7 @@ public class Main extends JFrame implements ActionListener, FractalListener {
     private JButton resetZoomButton;
 
     private MandelbrotFractalEvaluator evaluator;
-	private FractalCanvas fractalCanvas;
+	private Fractal fractal;
 
 	private int tryParseInteger(String s, int defaultValue) {
 		try {
@@ -84,7 +84,9 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 
         try {
             depth = Integer.parseInt(fractalDepthField.getText());
-        } catch (NumberFormatException ignored) { }
+        } catch (NumberFormatException ignored) {
+
+		}
 
         if (edge != null) {
             evaluator.setEdge(edge);
@@ -97,7 +99,7 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 	    Mfloat x, y, size;
 	    x = y = size = null;
 
-		if (fractalCanvas != null) {
+		if (fractal != null) {
 			try {
                 x = Number.buildFloat(fractalXField.getText());
                 y = Number.buildFloat(fractalYField.getText());
@@ -106,12 +108,12 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 
             updateFractalEvaluator();
 
-            fractalCanvas.setPixelSize(tryParseInteger(pixelSizeField.getText(), PIXEL_SIZE));
+            fractal.setPixelSize(tryParseInteger(pixelSizeField.getText(), PIXEL_SIZE));
 
             if (x != null && y != null && size != null) {
-                fractalCanvas.setViewSize(size);
-                fractalCanvas.setCenterX(x);
-                fractalCanvas.setCenterY(y);
+                fractal.setViewSize(size);
+                fractal.setCenterX(x);
+                fractal.setCenterY(y);
             }
 
             updateUI();
@@ -119,9 +121,9 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 	}
 
 	private void resetFractalZoom() {
-	    fractalCanvas.setCenterX(DEFAULT_X);
-        fractalCanvas.setCenterY(DEFAULT_Y);
-        fractalCanvas.setViewSize(DEFAULT_VIEW_SIZE);
+	    fractal.setCenterX(DEFAULT_X);
+        fractal.setCenterY(DEFAULT_Y);
+        fractal.setViewSize(DEFAULT_VIEW_SIZE);
     }
 
 	@Override
@@ -136,7 +138,7 @@ public class Main extends JFrame implements ActionListener, FractalListener {
             FractalDepthPainter painter = DEPTH_PAINTERS.get(painterName);
             if (painter != null) {
                 evaluator.setDepthPainter(painter);
-                fractalCanvas.repaint();
+                fractal.repaint();
             }
         }
     }
@@ -148,16 +150,16 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 				new DummyFractalFunction());
 	}
 	
-	private static FractalCanvas buildFractal(FractalEvaluator evaluator) {
-		return new FractalCanvas(DEFAULT_X, DEFAULT_Y, DEFAULT_VIEW_SIZE, PIXEL_SIZE, evaluator);
+	private static Fractal buildFractal(FractalEvaluator evaluator) {
+		return new Fractal(DEFAULT_X, DEFAULT_Y, DEFAULT_VIEW_SIZE, PIXEL_SIZE, evaluator);
 	}
 	
 	private Component buildCenterUI() {
 		evaluator = buildFractalEvaluator();
-		fractalCanvas = buildFractal(evaluator);
-		fractalCanvas.addFractalListener(this);
-		new CanvasZoomable(MIN_ZOOM, fractalCanvas, fractalCanvas);
-		return fractalCanvas;
+		fractal = buildFractal(evaluator);
+		fractal.addFractalListener(this);
+		new CanvasZoomable(MIN_ZOOM, fractal, fractal);
+		return fractal;
 	}
 	
 	private Component buildTopUI() {
@@ -227,15 +229,15 @@ public class Main extends JFrame implements ActionListener, FractalListener {
 	}
 
     @Override
-    public void fractalUpdated(FractalCanvas f) {
+    public void fractalUpdated(Fractal f) {
         updateUI();
     }
 
 	private void updateUI() {
-        fractalXField.setText(fractalCanvas.getCenterX().toString());
-        fractalYField.setText(fractalCanvas.getCenterY().toString());
-        fractalViewSizeField.setText(fractalCanvas.getViewSize().toString());
-        pixelSizeField.setText(String.valueOf(fractalCanvas.getPixelSize()));
+        fractalXField.setText(fractal.getCenterX().toString());
+        fractalYField.setText(fractal.getCenterY().toString());
+        fractalViewSizeField.setText(fractal.getViewSize().toString());
+        pixelSizeField.setText(String.valueOf(fractal.getPixelSize()));
 
         // Evaluator fields
         fractalDepthField.setText(String.valueOf(evaluator.getMaxDepth()));
