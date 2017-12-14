@@ -67,7 +67,7 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	}
 
 	/**
-	 * @return FractalCanvas depth painter
+	 * @return Fractal depth painter
 	 */
 	public FractalDepthPainter getDepthPainter() {
 		return painter;
@@ -82,7 +82,7 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	}
 
 	/**
-	 * @return FractalCanvas function
+	 * @return Fractal function
 	 */
 	public FractalFunction getFunction() {
 		return function;
@@ -90,7 +90,7 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 
 	/**
 	 * Updates fractal function.
-	 * @param function FractalCanvas function
+	 * @param function Fractal function
 	 */
 	public void setFunction(FractalFunction function) {
 		this.function = function;
