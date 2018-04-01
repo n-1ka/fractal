@@ -2,16 +2,16 @@ package mandelbrot;
 
 import java.awt.Color;
 
-import fractal.FractalFunction;
-import fractal.FractalDepthPainter;
-import fractal.FractalEvaluator;
+import fractal.worker.FractalFunction;
+import fractal.worker.FractalDepthPainter;
+import fractal.worker.FractalEvaluator;
 import math.Mcomplex;
 import math.Mfloat;
 import math.Number;
 
 public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	
-	public final static double EDGE = 2.0;
+	private final static double EDGE = 2.0;
 	
 	private int maxDepth;
 	private Mfloat edge;
@@ -75,7 +75,7 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 
 	/**
 	 * Updates depth painter
-	 * @param painter
+	 * @param painter Fractal painter
 	 */
 	public void setDepthPainter(FractalDepthPainter painter) {
 		this.painter = painter;

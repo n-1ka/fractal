@@ -9,5 +9,23 @@ public interface Mfloat extends Comparable<Mfloat> {
 	Mfloat mul(Mfloat f);
 
 	Mfloat div(Mfloat f);
-	
+
+	Mfloat maxi(Mfloat f);
+
+	Mfloat mini(Mfloat f);
+
+	Mfloat add(double f);
+
+	Mfloat sub(double f);
+
+	Mfloat mul(double f);
+
+	Mfloat div(double f);
+
+	Mfloat maxi(double f);
+
+	Mfloat mini(double f);
+
+	Mfloat abs();
+
 }
