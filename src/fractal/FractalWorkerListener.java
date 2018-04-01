@@ -1,7 +1,9 @@
 package fractal;
 
+import fractal.worker.FractalWorker;
+
 public interface FractalWorkerListener {
 
-    void fractalWorkerFinished(FractalWorker worker);
+    void fractalPainted(FractalWorker worker);
 
 }
