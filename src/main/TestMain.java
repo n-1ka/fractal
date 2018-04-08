@@ -26,8 +26,8 @@ public class TestMain extends JFrame implements FractalWorkerListener {
                 )
         );
 
-        worker.setImage(new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_RGB));
         worker.setProblem(new FractalProblem(
+                new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_RGB),
                 new Area(
                         Number.buildFloat(-2.0), Number.buildFloat(2.0),
                         Number.buildFloat(-2.0), Number.buildFloat(2.0)
@@ -53,8 +53,8 @@ public class TestMain extends JFrame implements FractalWorkerListener {
     }
 
     @Override
-    public void fractalPainted(FractalWorker worker) {
-        img = worker.getImage();
+    public void fractalPainted(FractalWorker worker, FractalProblem problem) {
+        img = problem.getImage();
         setSize(img.getWidth(this), img.getHeight(this));
         repaint();
     }
