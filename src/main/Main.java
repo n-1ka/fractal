@@ -1,8 +1,15 @@
 package main;
 
+import fractal.FractalWorkerListener;
 import fractal.worker.FractalDepthPainter;
+import fractal.worker.FractalEvaluator;
+import fractal.worker.FractalProblem;
+import fractal.worker.FractalWorker;
 import mandelbrot.DummyFractalDepthPainter;
+import mandelbrot.DummyFractalFunction;
 import mandelbrot.GrayFractalDepthPainter;
+import mandelbrot.MandelbrotFractalEvaluator;
+import math.Area;
 import math.Mfloat;
 import math.Number;
 
@@ -10,13 +17,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Main extends JFrame implements ActionListener {
+public class Main extends JFrame implements ActionListener, FractalWorkerListener {
 
 	// Fractal constants
-	private static final int PIXEL_SIZE = 2;
+	private static final int DEFAULT_PIXEL_SIZE = 2;
 	private static final int DEFAULT_DEPTH = 1000;
 	private static final Mfloat DEFAULT_X = Number.buildFloat(0.0);
     private static final Mfloat DEFAULT_Y = Number.buildFloat(0.0);
@@ -52,6 +60,11 @@ public class Main extends JFrame implements ActionListener {
 	private JButton updateCoordinatesButton;
     private JButton resetZoomButton;
 
+    private Mfloat fractalX, fractalY, fractalViewSize;
+    private int depth, pixelSize;
+    private BufferedImage currentImage;
+    private FractalWorker worker;
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
@@ -70,7 +83,12 @@ public class Main extends JFrame implements ActionListener {
     }
 	
 	private Component buildCenterUI() {
-		return new JLabel("Hi");
+		return new JPanel() {
+			@Override
+			public void paint(Graphics g) {
+				g.drawImage(currentImage, 0, 0, this);
+			}
+		};
 	}
 	
 	private Component buildTopUI() {
@@ -115,7 +133,7 @@ public class Main extends JFrame implements ActionListener {
 		
 		res.add(new JLabel("Pixel size: "));
 		pixelSizeField = new JTextField(5);
-		pixelSizeField.setText(String.valueOf(PIXEL_SIZE));
+		pixelSizeField.setText(String.valueOf(DEFAULT_PIXEL_SIZE));
 		res.add(pixelSizeField);
 
 		res.add(new JLabel("Depth: "));
@@ -138,16 +156,57 @@ public class Main extends JFrame implements ActionListener {
 		return res;
 	}
 
+	private FractalEvaluator buildEvaluator() {
+	    return new MandelbrotFractalEvaluator(
+	            DEFAULT_DEPTH,
+                DEFAULT_PAINTER,
+                new DummyFractalFunction()
+        );
+    }
+
+    private Area getCurrentArea() {
+        return new Area(
+                Number.buildFloat(-2.0), Number.buildFloat(2.0),
+                Number.buildFloat(-2.0), Number.buildFloat(2.0)
+        );
+    }
+
+    private FractalProblem buildProblem() {
+	    return new FractalProblem(
+	            getCurrentArea()
+        );
+    }
+
+    private void startWorker() {
+	    worker = new FractalWorker(buildEvaluator());
+	    worker.setProblem(buildProblem());
+	    worker.setImage(new BufferedImage(1300, 1000, BufferedImage.TYPE_INT_RGB));
+	    worker.addFractalWorkerListener(this);
+	    worker.start();
+    }
+
+    private void initFields() {
+	    fractalX = DEFAULT_X;
+	    fractalY = DEFAULT_Y;
+	    fractalViewSize = DEFAULT_VIEW_SIZE;
+	    depth = DEFAULT_DEPTH;
+	    pixelSize = DEFAULT_PIXEL_SIZE;
+    }
+
 	private Main() {
 		setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
 		setLayout(new BorderLayout());
 
+		initFields();
+
 		add(buildCenterUI(), BorderLayout.CENTER);
 		add(buildTopUI(), BorderLayout.NORTH);
 		add(buildBottomUI(), BorderLayout.SOUTH);
+
+		startWorker();
     }
-	
-	public static void main(String[] args) {
+
+    public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
             Main main = new Main();
             main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -155,5 +214,11 @@ public class Main extends JFrame implements ActionListener {
             main.setVisible(true);
         });
 	}
+
+    @Override
+    public void fractalPainted(FractalWorker worker) {
+        currentImage = worker.getImage();
+        repaint();
+    }
 
 }
