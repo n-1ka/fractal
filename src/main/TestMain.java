@@ -20,7 +20,7 @@ public class TestMain extends JFrame implements FractalWorkerListener {
     public TestMain() {
         FractalWorker worker = new FractalWorker(
                 new MandelbrotFractalEvaluator(
-                        2000,
+                        20,
                         new DummyFractalDepthPainter(),
                         new DummyFractalFunction()
                 )
