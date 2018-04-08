@@ -14,7 +14,6 @@ import java.util.List;
 public class FractalWorker extends Thread {
 
     private FractalEvaluator evaluator;
-    private BufferedImage image;
     private FractalProblem problem;
     private List<FractalWorkerListener> listeners;
     private boolean running;
@@ -30,8 +29,8 @@ public class FractalWorker extends Thread {
         this.listeners.add(listener);
     }
 
-    private synchronized void notifyFractalWorkerListners() {
-        this.listeners.forEach((l) -> l.fractalPainted(this));
+    private synchronized void notifyFractalWorkerListners(FractalProblem problem) {
+        this.listeners.forEach((l) -> l.fractalPainted(this, problem));
     }
 
     public synchronized FractalEvaluator getEvaluator() {
@@ -42,14 +41,6 @@ public class FractalWorker extends Thread {
         this.evaluator = evaluator;
     }
 
-    public synchronized void setImage(BufferedImage image) {
-        this.image = image;
-    }
-
-    public synchronized BufferedImage getImage() {
-        return image;
-    }
-
     public synchronized void setProblem(FractalProblem problem) {
         this.problem = problem;
     }
@@ -58,29 +49,22 @@ public class FractalWorker extends Thread {
         return problem;
     }
 
-    public synchronized void setImageProblem(BufferedImage image, FractalProblem problem) {
-        this.image = image;
-        this.problem = problem;
-    }
-
     @Override
     public void run() {
         FractalEvaluator evaluator = getEvaluator();
-        BufferedImage image = getImage();
         FractalProblem problem = getProblem();
         boolean repaint = true;
 
         while (running) {
-            if (repaint && image != null && problem != null) {
-                if (paintImage(image, evaluator, problem)) {
-                    notifyFractalWorkerListners();
+            if (repaint && problem != null) {
+                if (paintImage(evaluator, problem)) {
+                    notifyFractalWorkerListners(problem);
                 }
             }
 
-            repaint = isStateUpdated(image, evaluator, problem);
+            repaint = isStateUpdated(evaluator, problem);
 
             if (repaint) {
-                image = getImage();
                 evaluator = getEvaluator();
                 problem = getProblem();
             }
@@ -88,17 +72,17 @@ public class FractalWorker extends Thread {
 
     }
 
-    private boolean isStateUpdated(BufferedImage currentImage,
-                                   FractalEvaluator currentEvaluator,
+    private boolean isStateUpdated(FractalEvaluator currentEvaluator,
                                    FractalProblem currentProblem) {
-        return currentImage != image || currentEvaluator != evaluator || currentProblem != problem;
+        return currentEvaluator != evaluator || currentProblem != problem;
     }
 
-    private boolean paintImage(BufferedImage image, FractalEvaluator evaluator, FractalProblem problem) {
-        Area area = problem.area();
+    private boolean paintImage(FractalEvaluator evaluator, FractalProblem problem) {
+        Area area = problem.getArea();
 
         Mfloat width = area.getWidth();
         Mfloat height = area.getHeight();
+        BufferedImage image = problem.getImage();
 
         int imageWidth = image.getWidth();
         int imageHeight = image.getHeight();
@@ -115,7 +99,7 @@ public class FractalWorker extends Thread {
 
                 image.setRGB(i, j, color.getRGB());
 
-                isInterrupted = isStateUpdated(image, evaluator, problem);
+                isInterrupted = isStateUpdated(evaluator, problem);
             }
         }
 

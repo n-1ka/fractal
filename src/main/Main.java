@@ -105,7 +105,7 @@ public class Main extends JFrame implements ActionListener, FractalWorkerListene
         res.add(fractalXField);
         res.add(fractalYField);
 
-        res.add(new JLabel("View area size: "));
+        res.add(new JLabel("View getArea size: "));
         fractalViewSizeField = new JTextField(FLOAT_INPUT_SIZE);
         res.add(fractalViewSizeField);
 
@@ -173,6 +173,7 @@ public class Main extends JFrame implements ActionListener, FractalWorkerListene
 
     private FractalProblem buildProblem() {
 	    return new FractalProblem(
+	            new BufferedImage(1300, 1000, BufferedImage.TYPE_INT_RGB),
 	            getCurrentArea()
         );
     }
@@ -180,7 +181,6 @@ public class Main extends JFrame implements ActionListener, FractalWorkerListene
     private void startWorker() {
 	    worker = new FractalWorker(buildEvaluator());
 	    worker.setProblem(buildProblem());
-	    worker.setImage(new BufferedImage(1300, 1000, BufferedImage.TYPE_INT_RGB));
 	    worker.addFractalWorkerListener(this);
 	    worker.start();
     }
@@ -216,8 +216,8 @@ public class Main extends JFrame implements ActionListener, FractalWorkerListene
 	}
 
     @Override
-    public void fractalPainted(FractalWorker worker) {
-        currentImage = worker.getImage();
+    public void fractalPainted(FractalWorker worker, FractalProblem problem) {
+        currentImage = problem.getImage();
         repaint();
     }
 
