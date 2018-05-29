@@ -1,7 +1,7 @@
 package fractal.worker;
 
 import fractal.FractalWorkerListener;
-import math.Area;
+import math.RectArea;
 import math.Mcomplex;
 import math.Mfloat;
 import math.Number;
@@ -13,79 +13,112 @@ import java.util.List;
 
 public class FractalWorker extends Thread {
 
+    private class Task {
+        private BufferedImage image;
+        private FractalEvaluator evaluator;
+        private RectArea area;
+
+        Task(BufferedImage image, FractalEvaluator evaluator, RectArea area) {
+            this.image = image;
+            this.evaluator = evaluator;
+            this.area = area;
+        }
+
+        boolean isValid() {
+            return image != null && evaluator != null && area != null;
+        }
+    }
+
     private FractalEvaluator evaluator;
-    private FractalProblem problem;
+    private BufferedImage image;
+    private RectArea area;
     private List<FractalWorkerListener> listeners;
+    private Task currentTask;
     private boolean running;
 
     public FractalWorker(FractalEvaluator evaluator) {
-        super("");
+        this.image = null;
         this.evaluator = evaluator;
+        this.area = null;
         this.listeners = new ArrayList<>();
         this.running = true;
+
+        this.currentTask = new Task(null, evaluator, null);
     }
 
     public synchronized void addFractalWorkerListener(FractalWorkerListener listener) {
         this.listeners.add(listener);
     }
 
-    private synchronized void notifyFractalWorkerListners(FractalProblem problem) {
-        this.listeners.forEach((l) -> l.fractalPainted(this, problem));
+    private synchronized void notifyFractalWorkerListeners(BufferedImage image) {
+        this.listeners.forEach((l) -> l.fractalPainted(this, image));
     }
 
     public synchronized FractalEvaluator getEvaluator() {
         return evaluator;
     }
 
+    public synchronized BufferedImage getImage() {
+        return image;
+    }
+
+    public synchronized RectArea getArea() {
+        return area;
+    }
+
     public synchronized void setEvaluator(FractalEvaluator evaluator) {
         this.evaluator = evaluator;
+        updateTask();
     }
 
-    public synchronized void setProblem(FractalProblem problem) {
-        this.problem = problem;
+    public synchronized void setImage(BufferedImage image) {
+        this.image = image;
+        updateTask();
     }
 
-    public synchronized FractalProblem getProblem() {
-        return problem;
+    public synchronized void setArea(RectArea area) {
+        this.area = area;
+        updateTask();
+    }
+
+    private synchronized void updateTask() {
+        currentTask = new Task(image, evaluator, area);
+    }
+
+    private synchronized Task getCurrentTask() {
+        return currentTask;
     }
 
     @Override
     public void run() {
-        FractalEvaluator evaluator = getEvaluator();
-        FractalProblem problem = getProblem();
+        Task task = getCurrentTask();
+
         boolean repaint = true;
 
         while (running) {
-            if (repaint && problem != null) {
-                if (paintImage(evaluator, problem)) {
-                    notifyFractalWorkerListners(problem);
+            if (repaint && task.isValid()) {
+                if (paintImage(task)) {
+                    notifyFractalWorkerListeners(image);
                 }
             }
 
-            repaint = isStateUpdated(evaluator, problem);
+            repaint = (task != getCurrentTask());
 
             if (repaint) {
-                evaluator = getEvaluator();
-                problem = getProblem();
+                task = getCurrentTask();
             }
         }
 
     }
 
-    private boolean isStateUpdated(FractalEvaluator currentEvaluator,
-                                   FractalProblem currentProblem) {
-        return currentEvaluator != evaluator || currentProblem != problem;
-    }
-
-    private boolean paintImage(FractalEvaluator evaluator, FractalProblem problem) {
-        Area area = problem.getArea();
+    private boolean paintImage(Task task) {
+        RectArea area = task.area;
 
         Mfloat width = area.getWidth();
         Mfloat height = area.getHeight();
-        BufferedImage image = problem.getImage();
 
-        int imageWidth = image.getWidth();
-        int imageHeight = image.getHeight();
+        int imageWidth = task.image.getWidth();
+        int imageHeight = task.image.getHeight();
         boolean isInterrupted = false;
 
         for (int i = 0; i < imageWidth && !isInterrupted; i++) {
@@ -95,11 +128,11 @@ public class FractalWorker extends Thread {
 
                 Mcomplex value = Number.buildComplex(real, imag);
 
-                Color color = evaluator.evaluate(value);
+                Color color = task.evaluator.evaluate(value);
 
-                image.setRGB(i, j, color.getRGB());
+                task.image.setRGB(i, j, color.getRGB());
 
-                isInterrupted = isStateUpdated(evaluator, problem);
+                isInterrupted = task != getCurrentTask();
             }
         }
 
