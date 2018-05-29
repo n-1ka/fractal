@@ -99,12 +99,12 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	@Override
 	public Color evaluate(Mcomplex value) {
 		Mfloat edgeSquared = edge.mul(edge);
-		Mcomplex v = Number.buildComplex(0, 0);
+		Mcomplex result = Number.buildComplex(0, 0);
 
 		int depth = 0;
 		while (depth < maxDepth && 
-				squareAbs(v).compareTo(edgeSquared) < 0) {
-			v = function.evaluate(v, value);
+				squareAbs(result).compareTo(edgeSquared) < 0) {
+			result = function.evaluate(result, value);
 			depth++;
 		}
 

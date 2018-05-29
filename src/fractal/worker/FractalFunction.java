@@ -4,6 +4,6 @@ import math.Mcomplex;
 
 public interface FractalFunction {
 	
-	Mcomplex evaluate(Mcomplex value, Mcomplex add);
+	Mcomplex evaluate(Mcomplex prevResult, Mcomplex value);
 
 }

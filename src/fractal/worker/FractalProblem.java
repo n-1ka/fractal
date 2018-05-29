@@ -1,26 +1,17 @@
 package fractal.worker;
 
-import math.Area;
-
-import java.awt.image.BufferedImage;
+import math.RectArea;
 
 public class FractalProblem {
 
-    private BufferedImage image;
-    private Area area;
+    private RectArea area;
 
-    public FractalProblem(BufferedImage image, Area area) {
-        this.image = image;
+    public FractalProblem(RectArea area) {
         this.area = area;
     }
 
-    public BufferedImage getImage() {
-        return image;
-    }
-
-    public Area getArea() {
+    public RectArea getArea() {
         return area;
     }
-
 
 }
