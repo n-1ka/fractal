@@ -1,7 +1,7 @@
 package main;
 
 import fractal.worker.FractalDepthPainter;
-import fractal.worker.FractalWorker;
+import fractal.worker.FractalWorkerImpl;
 import mandelbrot.DummyFractalDepthPainter;
 import mandelbrot.DummyFractalFunction;
 import mandelbrot.GrayFractalDepthPainter;
@@ -16,8 +16,8 @@ import java.util.Map;
 
 public class Main {
 
-    private static FractalWorker buildFractalWorker() {
-        return new FractalWorker(
+    private static FractalWorkerImpl buildFractalWorker() {
+        return new FractalWorkerImpl(
                 new MandelbrotFractalEvaluator(
                         100,
                         new DummyFractalDepthPainter(),
@@ -27,7 +27,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        FractalWorker worker = buildFractalWorker();
+        FractalWorkerImpl worker = buildFractalWorker();
         worker.start();
 
         Map<String, FractalDepthPainter> depthPainters = new HashMap<>();

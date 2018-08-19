@@ -3,6 +3,7 @@ package view;
 import fractal.worker.FractalDepthPainter;
 import fractal.worker.FractalEvaluator;
 import fractal.worker.FractalWorker;
+import fractal.worker.FractalWorkerImpl;
 import math.CircleArea;
 
 import javax.swing.*;
