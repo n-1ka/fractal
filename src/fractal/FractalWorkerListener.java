@@ -6,6 +6,6 @@ import java.awt.image.BufferedImage;
 
 public interface FractalWorkerListener {
 
-    void fractalPainted(FractalWorker worker, BufferedImage image);
+    void fractalUpdated(FractalWorker worker, BufferedImage image);
 
 }
