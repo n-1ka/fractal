@@ -5,6 +5,7 @@ import fractal.worker.FractalWorker;
 import math.CircleArea;
 import util.MathUtil;
 
+import javax.swing.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
@@ -31,7 +32,8 @@ public class FractalPanel extends ImagePanel implements FractalWorkerListener, C
         int width = getWidth();
         int height = getHeight();
 
-        if (currentImage == null || currentImage.getWidth() != width || currentImage.getHeight() != height) {
+        if (width > 0 && height > 0 &&
+                (currentImage == null || currentImage.getWidth() != width || currentImage.getHeight() != height)) {
             currentImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             worker.setImage(currentImage);
             worker.setArea(MathUtil.squareToRect(fractalArea, width / (double) height));
@@ -39,9 +41,9 @@ public class FractalPanel extends ImagePanel implements FractalWorkerListener, C
     }
 
     @Override
-    public void fractalPainted(FractalWorker worker, BufferedImage image) {
+    public void fractalUpdated(FractalWorker worker, BufferedImage image) {
         if (image == currentImage) {
-            setImage(image);
+            SwingUtilities.invokeLater(() -> setImage(currentImage));
         }
     }
 

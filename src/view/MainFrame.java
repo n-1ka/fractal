@@ -3,7 +3,6 @@ package view;
 import fractal.worker.FractalDepthPainter;
 import fractal.worker.FractalEvaluator;
 import fractal.worker.FractalWorker;
-import fractal.worker.FractalWorkerImpl;
 import math.CircleArea;
 
 import javax.swing.*;
@@ -28,15 +27,13 @@ public final class MainFrame extends JFrame implements ActionListener {
     private JButton updateButton;
 
     private FractalWorker worker;
-    private CircleArea initialArea;
     private FractalPanel panel;
     private Map<String, FractalDepthPainter> depthPainters;
 
-    public MainFrame(FractalWorker worker, CircleArea initialArea, Map<String, FractalDepthPainter> depthPainters) {
+    public MainFrame(FractalPanel panel, FractalWorker worker, Map<String, FractalDepthPainter> depthPainters) {
         this.worker = worker;
-        this.initialArea = initialArea;
         this.depthPainters = new HashMap<>(depthPainters);
-        this.panel = new FractalPanel(worker, initialArea);
+        this.panel = panel;
 
         add(buildCenterUI());
         add(buildNorthUI(), BorderLayout.NORTH);
@@ -47,12 +44,9 @@ public final class MainFrame extends JFrame implements ActionListener {
 
     private void updateFields() {
         CircleArea fractalArea = panel.getFractalArea();
-
         fractalXField.setText(fractalArea.getCenterX().toString());
         fractalYField.setText(fractalArea.getCenterY().toString());
         fractalViewSizeField.setText(fractalArea.getDiameter().toString());
-
-        FractalEvaluator evaluator = worker.getEvaluator();
     }
 
     private Component buildCenterUI() {
@@ -128,8 +122,10 @@ public final class MainFrame extends JFrame implements ActionListener {
         Object source = e.getSource();
 
         if (source == resetZoomButton) {
+            System.out.println("RESET ZOOM");
             // TODO: Reset zoom
         } else if (source == updateButton) {
+            System.out.println("UPDATE!");
             // TODO: Update
         }
     }

@@ -2,7 +2,6 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class ImagePanel extends JPanel {
 
@@ -32,19 +31,8 @@ public class ImagePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         if (image != null) {
-            g.drawImage(image, 0, 0, this);
+            g.drawImage(image, 0, 0, null);
         }
     }
-
-    @Override
-    public boolean imageUpdate(Image img, int infoflags, int x, int y, int w, int h) {
-        if (img == image) {
-            System.out.println("UPDATE");
-            setSize(w, h);
-            return true;
-        }
-        return false;
-    }
-
 
 }
