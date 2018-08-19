@@ -2,6 +2,7 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class ImagePanel extends JPanel {
 
@@ -20,8 +21,7 @@ public class ImagePanel extends JPanel {
     }
 
     public void setImage(Image img) {
-        this.image = img;
-        setSize(img.getWidth(this), img.getHeight(this));
+        this.image = img.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
         repaint();
     }
 
