@@ -1,11 +1,11 @@
 package fractal.worker;
 
-import java.awt.Color;
-
 import math.Mcomplex;
 
+import java.awt.*;
+
 public interface FractalEvaluator {
-	
+
 	Color evaluate(Mcomplex value);
 
 }
