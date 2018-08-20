@@ -1,18 +1,13 @@
 package view.main_frame;
 
-import fractal.worker.FractalDepthPainter;
 import view.FractalPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class MainFrame extends JFrame implements ActionListener {
 
@@ -29,17 +24,15 @@ public final class MainFrame extends JFrame implements ActionListener {
     private JButton updateButton;
 
     private FractalPanel panel;
-    private Map<String, FractalDepthPainter> depthPainters;
     private List<MainFrameEventListener> listeners;
 
-    public MainFrame(FractalPanel panel, Map<String, FractalDepthPainter> depthPainters) {
+    public MainFrame(FractalPanel panel, List<String> depthPainters) {
         this.panel = panel;
-        this.depthPainters = new HashMap<>(depthPainters);
         this.listeners = new ArrayList<>();
 
         add(buildCenterUI());
         add(buildNorthUI(), BorderLayout.NORTH);
-        add(buildSouthUI(), BorderLayout.SOUTH);
+        add(buildSouthUI(depthPainters), BorderLayout.SOUTH);
     }
 
     public void addListener(MainFrameEventListener listener) {
@@ -90,6 +83,14 @@ public final class MainFrame extends JFrame implements ActionListener {
         setFieldValue(fractalEdgeField, value);
     }
 
+    public void setCurrentDepthPainterName(String painterName) {
+        fractalPainterDropdown.setSelectedItem(painterName);
+    }
+
+    public String getCurrentDepthPainterName() {
+        return (String) fractalPainterDropdown.getSelectedItem();
+    }
+
     private void notifyUpdateClicked() {
         listeners.forEach(MainFrameEventListener::updateClicked);
     }
@@ -98,8 +99,8 @@ public final class MainFrame extends JFrame implements ActionListener {
         listeners.forEach(MainFrameEventListener::resetZoomClicked);
     }
 
-    private void notifyPainterChanged(FractalDepthPainter depthPainter) {
-        listeners.forEach(l -> l.fractalPainterChanged(depthPainter));
+    private void notifyPainterChanged(String painterName) {
+        listeners.forEach(l -> l.fractalPainterChanged(painterName));
     }
 
     private String getFieldValue(JTextField field) throws InterruptedException {
@@ -143,10 +144,10 @@ public final class MainFrame extends JFrame implements ActionListener {
         return res;
     }
 
-    private JComboBox buildFractalPainterDropdown() {
+    private JComboBox buildFractalPainterDropdown(List<String> depthPainters) {
         JComboBox<String> res = new JComboBox<>();
         String selectedItem = null;
-        for (String name : depthPainters.keySet()) {
+        for (String name : depthPainters) {
             if (selectedItem == null) {
                 selectedItem = name;
             }
@@ -159,7 +160,7 @@ public final class MainFrame extends JFrame implements ActionListener {
         return res;
     }
 
-    private Component buildSouthUI() {
+    private Component buildSouthUI(List<String> depthPainters) {
         JPanel res = new JPanel();
         res.setLayout(new FlowLayout());
 
@@ -176,7 +177,7 @@ public final class MainFrame extends JFrame implements ActionListener {
         res.add(fractalEdgeField);
 
         res.add(new JLabel("Coloring: "));
-        fractalPainterDropdown = buildFractalPainterDropdown();
+        fractalPainterDropdown = buildFractalPainterDropdown(depthPainters);
         res.add(fractalPainterDropdown);
 
         updateButton = new JButton("Update");
@@ -191,14 +192,12 @@ public final class MainFrame extends JFrame implements ActionListener {
         Object source = e.getSource();
 
         if (source == resetZoomButton) {
-            System.out.println("RESET ZOOM!");
             notifyRezetZoomClicked();
         } else if (source == updateButton) {
-            System.out.println("UPDATE!");
             notifyUpdateClicked();
         } else if (source == fractalPainterDropdown) {
             String painter = (String) fractalPainterDropdown.getSelectedItem();
-            notifyPainterChanged(depthPainters.get(painter));
+            notifyPainterChanged(painter);
         }
     }
 

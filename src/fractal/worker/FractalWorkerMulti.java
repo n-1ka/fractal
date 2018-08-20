@@ -64,6 +64,9 @@ public class FractalWorkerMulti extends Thread implements FractalWorker, Fractal
             }
         }
     }
+    public FractalWorkerMulti(int nRows, int nCols) {
+        this(nRows, nCols, null);
+    }
 
     @Override
     public void fractalUpdated(FractalWorker worker, BufferedImage image) {

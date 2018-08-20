@@ -8,6 +8,6 @@ public interface MainFrameEventListener {
 
     void resetZoomClicked();
 
-    void fractalPainterChanged(FractalDepthPainter depthPainter);
+    void fractalPainterChanged(String painterName);
 
 }
