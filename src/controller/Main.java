@@ -4,72 +4,55 @@ import fractal.worker.FractalDepthPainter;
 import fractal.worker.FractalWorker;
 import fractal.worker.FractalWorkerMulti;
 import mandelbrot.DummyFractalDepthPainter;
-import mandelbrot.DummyFractalFunction;
 import mandelbrot.GrayFractalDepthPainter;
-import mandelbrot.MandelbrotFractalEvaluator;
 import math.CircleArea;
 import math.Number;
+import repository.DepthPaintersRepository;
 import view.FractalPanel;
 import view.main_frame.MainFrame;
-import view.main_frame.MainFrameEventListener;
 
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Main implements MainFrameEventListener {
+public final class Main {
 
-    private static FractalWorker buildFractalWorker() {
-        MandelbrotFractalEvaluator evaluator = new MandelbrotFractalEvaluator(
-                100,
-                new DummyFractalDepthPainter(),
-                new DummyFractalFunction()
-        );
+    private static final Map<String, FractalDepthPainter> DEPTH_PAINTERS = new HashMap<>();
+    private static final CircleArea INITIAL_AREA = new CircleArea(
+            Number.buildFloat(0.0),
+            Number.buildFloat(0.0),
+            Number.buildFloat(4.0));
+    private static final DepthPaintersRepository PAINTERS_REPOSITORY = DepthPaintersRepository.getInstance();
 
-        FractalWorkerMulti worker = new FractalWorkerMulti(3, 3, evaluator);
+    static {
+        DEPTH_PAINTERS.put("default", new DummyFractalDepthPainter());
+        DEPTH_PAINTERS.put("grey", new GrayFractalDepthPainter());
+    }
+
+
+    private static FractalWorkerMulti buildFractalWorker() {
+        FractalWorkerMulti worker = new FractalWorkerMulti(4, 4);
         worker.start();
         return worker;
     }
 
-    public static void main(String[] args) {
-        Main main = new Main();
-        FractalWorker worker = buildFractalWorker();
+    private static MainFrame buildMainFrame(FractalWorker worker) {
+        MainFrame mainFrame = new MainFrame(new FractalPanel(worker, INITIAL_AREA),
+                PAINTERS_REPOSITORY.getDepthPainterNames());
 
-        Map<String, FractalDepthPainter> depthPainters = new HashMap<>();
-        depthPainters.put("default", new DummyFractalDepthPainter());
-        depthPainters.put("grey", new GrayFractalDepthPainter());
-
-        CircleArea circleArea = new CircleArea(
-                Number.buildFloat(0.0),
-                Number.buildFloat(0.0),
-                Number.buildFloat(4.0));
-
-        MainFrame mainFrame = new MainFrame(
-                new FractalPanel(worker, circleArea),
-                depthPainters);
-
-        mainFrame.addListener(main);
-
-		SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {
             mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             mainFrame.pack();
             mainFrame.setVisible(true);
         });
-	}
 
-    @Override
-    public void updateClicked() {
-        System.out.println("Update clicked!");
+        return mainFrame;
     }
 
-    @Override
-    public void resetZoomClicked() {
-        System.out.println("Zoom clicked!");
-    }
-
-    @Override
-    public void fractalPainterChanged(FractalDepthPainter depthPainter) {
-        System.out.println("Painter changed to : " + depthPainter.toString());
+    public static void main(String[] args) {
+        FractalWorkerMulti worker = buildFractalWorker();
+        MainFrame mainFrame = buildMainFrame(worker);
+        new FractalController(worker, mainFrame, PAINTERS_REPOSITORY);
     }
 
 }
