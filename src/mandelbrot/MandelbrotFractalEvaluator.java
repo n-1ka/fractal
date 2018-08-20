@@ -19,8 +19,8 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	private FractalFunction function;
 	
 	public MandelbrotFractalEvaluator(int maxDepth,
-										FractalDepthPainter painter,
-										FractalFunction function) {
+									  FractalDepthPainter painter,
+									  FractalFunction function) {
 		this.maxDepth = maxDepth;
 		this.painter = painter;
 		this.function = function;
@@ -36,19 +36,8 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	/**
 	 * @return Maximum function evaluation number.
 	 */
-	public int getMaxDepth() {
+	public int getDepth() {
 		return maxDepth;
-	}
-
-	/**
-     * Change maximum evaluation number.
-	 * @param maxDepth - Positive integer
-	 */
-	public void setMaxDepth(int maxDepth) {
-		if (maxDepth <= 0)
-			maxDepth = 1;
-
-		this.maxDepth = maxDepth;
 	}
 
 	/**
@@ -59,14 +48,6 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	}
 
 	/**
-	 * Set function divergence edge.
-	 * @param edge Mfloat
-	 */
-	public void setEdge(Mfloat edge) {
-		this.edge = edge;
-	}
-
-	/**
 	 * @return Fractal depth painter
 	 */
 	public FractalDepthPainter getDepthPainter() {
@@ -74,26 +55,10 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	}
 
 	/**
-	 * Updates depth painter
-	 * @param painter Fractal painter
-	 */
-	public void setDepthPainter(FractalDepthPainter painter) {
-		this.painter = painter;
-	}
-
-	/**
 	 * @return Fractal function
 	 */
 	public FractalFunction getFunction() {
 		return function;
-	}
-
-	/**
-	 * Updates fractal function.
-	 * @param function Fractal function
-	 */
-	public void setFunction(FractalFunction function) {
-		this.function = function;
 	}
 
 	@Override

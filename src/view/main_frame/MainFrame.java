@@ -1,16 +1,18 @@
-package view;
+package view.main_frame;
 
 import fractal.worker.FractalDepthPainter;
-import fractal.worker.FractalEvaluator;
-import fractal.worker.FractalWorker;
-import math.CircleArea;
+import view.FractalPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class MainFrame extends JFrame implements ActionListener {
 
@@ -26,27 +28,94 @@ public final class MainFrame extends JFrame implements ActionListener {
     private JComboBox fractalPainterDropdown;
     private JButton updateButton;
 
-    private FractalWorker worker;
     private FractalPanel panel;
     private Map<String, FractalDepthPainter> depthPainters;
+    private List<MainFrameEventListener> listeners;
 
-    public MainFrame(FractalPanel panel, FractalWorker worker, Map<String, FractalDepthPainter> depthPainters) {
-        this.worker = worker;
-        this.depthPainters = new HashMap<>(depthPainters);
+    public MainFrame(FractalPanel panel, Map<String, FractalDepthPainter> depthPainters) {
         this.panel = panel;
+        this.depthPainters = new HashMap<>(depthPainters);
+        this.listeners = new ArrayList<>();
 
         add(buildCenterUI());
         add(buildNorthUI(), BorderLayout.NORTH);
         add(buildSouthUI(), BorderLayout.SOUTH);
-
-        updateFields();
     }
 
-    private void updateFields() {
-        CircleArea fractalArea = panel.getFractalArea();
-        fractalXField.setText(fractalArea.getCenterX().toString());
-        fractalYField.setText(fractalArea.getCenterY().toString());
-        fractalViewSizeField.setText(fractalArea.getDiameter().toString());
+    public void addListener(MainFrameEventListener listener) {
+        listeners.add(listener);
+    }
+
+    public void setXField(String value) {
+        setFieldValue(fractalXField, value);
+    }
+
+    public String getXField() throws InterruptedException {
+        return getFieldValue(fractalXField);
+    }
+
+    public void setYField(String value) {
+        setFieldValue(fractalYField, value);
+    }
+
+    public String getYField() throws InterruptedException {
+        return getFieldValue(fractalYField);
+    }
+
+    public void setFractalViewSizeField(String value) {
+        setFieldValue(fractalViewSizeField, value);
+    }
+
+    public String getFractalViewSizeField() throws InterruptedException {
+        return getFieldValue(fractalViewSizeField);
+    }
+
+    public void setPixelSizeField(String value) {
+        setFieldValue(pixelSizeField, value);
+    }
+
+    public String getPixelSizeField() throws InterruptedException {
+        return getFieldValue(pixelSizeField);
+    }
+
+    public void setFractalDepthField(String value) {
+        setFieldValue(fractalDepthField, value);
+    }
+
+    public String getFractalDepthField() throws InterruptedException {
+        return getFieldValue(fractalDepthField);
+    }
+
+    public void setFractalEdgeField(String value) {
+        setFieldValue(fractalEdgeField, value);
+    }
+
+    private void notifyUpdateClicked() {
+        listeners.forEach(MainFrameEventListener::updateClicked);
+    }
+
+    private void notifyRezetZoomClicked() {
+        listeners.forEach(MainFrameEventListener::resetZoomClicked);
+    }
+
+    private void notifyPainterChanged(FractalDepthPainter depthPainter) {
+        listeners.forEach(l -> l.fractalPainterChanged(depthPainter));
+    }
+
+    private String getFieldValue(JTextField field) throws InterruptedException {
+//        AtomicReference<String> value = new AtomicReference<>("");
+//        try {
+//            SwingUtilities.invokeAndWait(() -> value.set(field.getText()));
+//        } catch (InvocationTargetException e) {
+//            e.printStackTrace();
+//        }
+//        return value.get();
+        return field.getText();
+    }
+
+    private void setFieldValue(JTextField field, String value) {
+//        SwingUtilities.invokeLater(() -> field.setText(value));
+        field.setText(value);
     }
 
     private Component buildCenterUI() {
@@ -122,11 +191,14 @@ public final class MainFrame extends JFrame implements ActionListener {
         Object source = e.getSource();
 
         if (source == resetZoomButton) {
-            System.out.println("RESET ZOOM");
-            // TODO: Reset zoom
+            System.out.println("RESET ZOOM!");
+            notifyRezetZoomClicked();
         } else if (source == updateButton) {
             System.out.println("UPDATE!");
-            // TODO: Update
+            notifyUpdateClicked();
+        } else if (source == fractalPainterDropdown) {
+            String painter = (String) fractalPainterDropdown.getSelectedItem();
+            notifyPainterChanged(depthPainters.get(painter));
         }
     }
 
