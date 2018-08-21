@@ -82,6 +82,10 @@ public final class MainFrame extends JFrame implements ActionListener {
         setFieldValue(fractalEdgeField, value);
     }
 
+    public String getFractalEdgeField() {
+        return getFieldValue(fractalEdgeField);
+    }
+
     public void setCurrentDepthPainterName(String painterName) {
         fractalPainterDropdown.setSelectedItem(painterName);
     }
