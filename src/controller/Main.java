@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import static controller.FractalConstants.INITIAL_AREA;
-import static controller.FractalConstants.INITIAL_PIXELS;
+import static controller.FractalConstants.INITIAL_PIXEL_SCALE;
 import static controller.FractalConstants.PAINTERS_REPOSITORY;
 
 public final class Main {
@@ -38,7 +38,7 @@ public final class Main {
 
         ZoomableImagePanel imagePanel = new ZoomableImagePanel(Color.RED);
         MainFrame mainFrame = buildMainFrame(imagePanel);
-        FractalImageController imageController = new FractalImageController(worker, INITIAL_AREA, imagePanel, INITIAL_PIXELS);
+        FractalImageController imageController = new FractalImageController(worker, INITIAL_AREA, imagePanel, INITIAL_PIXEL_SCALE);
 
         new FractalController(worker, mainFrame, PAINTERS_REPOSITORY, imageController);
         new FractalZoomController(imagePanel, imageController);

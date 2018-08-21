@@ -19,16 +19,16 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
     private BufferedImage currentImage;
     private CircleArea fractalArea;
     private ImagePanel imagePanel;
-    private int pixels;
+    private int pixelScale;
 
     private List<FractalAreaUpdateListener> areaUpdateListeners;
 
-    public FractalImageController(FractalWorker worker, CircleArea fractalArea, ImagePanel imagePanel, int pixels) {
+    public FractalImageController(FractalWorker worker, CircleArea fractalArea, ImagePanel imagePanel, int pixelScale) {
         this.worker = worker;
         this.currentImage = null;
         this.fractalArea = fractalArea;
         this.imagePanel = imagePanel;
-        this.pixels = pixels;
+        this.pixelScale = pixelScale;
         this.areaUpdateListeners = new ArrayList<>();
 
         imagePanel.addComponentListener(this);
@@ -53,22 +53,18 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
         notifyFractalImageUpdate(fractalArea);
     }
 
-    public int getPixels() {
-        return pixels;
+    public int getPixelScale() {
+        return pixelScale;
     }
 
-    public void setPixels(int pixels) {
-        this.pixels = pixels;
+    public void setPixelSscale(int pixelScale) {
+        this.pixelScale = pixelScale;
         updateImage(true);
     }
 
     private void updateImage(boolean force) {
-        int width = imagePanel.getWidth();
-        int height = imagePanel.getHeight();
-        int imagePixels = width * height;
-        double ratio = Math.sqrt(pixels / (double) imagePixels);
-        width = (int) (width * ratio);
-        height = (int) (height * ratio);
+        int width = imagePanel.getWidth()/pixelScale;
+        int height = imagePanel.getHeight()/pixelScale;
 
         if (width > 0 && height > 0 &&
                 (force || currentImage == null ||
