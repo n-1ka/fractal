@@ -11,20 +11,19 @@ import math.Number;
 
 public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	
-	private final static double EDGE = 2.0;
-	
 	private int maxDepth;
 	private Mfloat edge;
 	private FractalDepthPainter painter;
 	private FractalFunction function;
 	
 	public MandelbrotFractalEvaluator(int maxDepth,
+									  Mfloat edge,
 									  FractalDepthPainter painter,
 									  FractalFunction function) {
 		this.maxDepth = maxDepth;
 		this.painter = painter;
 		this.function = function;
-		this.edge = Number.buildFloat(EDGE);
+		this.edge = edge;
 	}
 	
 	private Mfloat squareAbs(Mcomplex complex) {

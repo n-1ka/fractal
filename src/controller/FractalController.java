@@ -1,5 +1,7 @@
 package controller;
 
+import fractal.worker.FractalDepthPainter;
+import fractal.worker.FractalFunction;
 import fractal.worker.FractalWorker;
 import fractal.worker.FractalWorkerMulti;
 import mandelbrot.MandelbrotFractalEvaluator;
@@ -12,9 +14,7 @@ import view.main_frame.MainFrameEventListener;
 
 import javax.swing.*;
 
-import static controller.FractalConstants.INITIAL_AREA;
-import static controller.FractalConstants.INITIAL_FRACTAL_FUNCTION;
-import static controller.FractalConstants.INITIAL_MAX_DEPTH;
+import static controller.FractalConstants.*;
 
 public final class FractalController implements MainFrameEventListener {
 
@@ -23,6 +23,12 @@ public final class FractalController implements MainFrameEventListener {
     private DepthPaintersRepository paintersRepository;
     private FractalImageController imageController;
     private int currentPainterIndex;
+    private final MandelbrotFractalEvaluator evaluator;
+
+    private static MandelbrotFractalEvaluator buildEvaluator(int maxDepth, Mfloat edge,
+                                                             FractalDepthPainter painter, FractalFunction function) {
+        return new MandelbrotFractalEvaluator(maxDepth, edge, painter, function);
+    }
 
     public FractalController(FractalWorkerMulti worker, MainFrame frame,
                              DepthPaintersRepository paintersRepository, FractalImageController imageController) {
@@ -31,12 +37,14 @@ public final class FractalController implements MainFrameEventListener {
         this.paintersRepository = paintersRepository;
         this.imageController = imageController;
         this.currentPainterIndex = 0;
-
-        worker.setEvaluator(new MandelbrotFractalEvaluator(
+        this.evaluator = buildEvaluator(
                 INITIAL_MAX_DEPTH,
+                Number.buildFloat(INITIAL_EDGE),
                 paintersRepository.getPainter(currentPainterIndex),
                 INITIAL_FRACTAL_FUNCTION
-        ));
+        );
+
+        worker.setEvaluator(evaluator);
 
         frame.addListener(this);
         initFields();
@@ -46,6 +54,8 @@ public final class FractalController implements MainFrameEventListener {
         // Coordinates
         CircleArea fractalArea = imageController.getFractalArea();
         int pixels = imageController.getPixels();
+        int depth = evaluator.getDepth();
+        Mfloat edge = evaluator.getEdge();
 
         SwingUtilities.invokeLater(() -> {
             frame.setXField(fractalArea.getCenterX().toString());
@@ -53,6 +63,8 @@ public final class FractalController implements MainFrameEventListener {
             frame.setFractalViewSizeField(fractalArea.getDiameter().toString());
 
             frame.setPixelsField(String.valueOf(pixels));
+            frame.setFractalDepthField(String.valueOf(depth));
+            frame.setFractalEdgeField(String.valueOf(edge));
         });
     }
 
@@ -61,9 +73,19 @@ public final class FractalController implements MainFrameEventListener {
         SwingUtilities.invokeLater(() -> {
             try {
                 int pixels = Integer.parseInt(frame.getPixelsField());
+                int depth = Integer.parseInt(frame.getFractalDepthField());
+                Mfloat edge = Number.buildFloat(frame.getFractalEdgeField());
+                FractalDepthPainter depthPainter = paintersRepository.getDepthPainter(
+                        frame.getCurrentDepthPainterName());
+
+                MandelbrotFractalEvaluator newEvaluator = buildEvaluator(depth, edge, depthPainter,
+                        evaluator.getFunction()     // TODO: Implement function update feature
+                );
+
                 imageController.setPixels(pixels);
+                worker.setEvaluator(newEvaluator);
             } catch (NumberFormatException e) {
-                System.out.println(String.format("Pixel field format error: %s", e));
+                System.out.println(String.format("Number field format error: %s", e));
             }
         });
     }
