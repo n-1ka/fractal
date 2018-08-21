@@ -2,28 +2,34 @@ package controller;
 
 import fractal.worker.FractalWorker;
 import fractal.worker.FractalWorkerMulti;
-import mandelbrot.DummyFractalFunction;
 import mandelbrot.MandelbrotFractalEvaluator;
 import math.CircleArea;
-import math.RectArea;
+import math.Mfloat;
+import math.Number;
 import repository.DepthPaintersRepository;
 import view.main_frame.MainFrame;
 import view.main_frame.MainFrameEventListener;
 
-public final class FractalController implements MainFrameEventListener {
+import javax.swing.*;
 
-    private static final int INITIAL_MAX_DEPTH = 100;
-    private static final DummyFractalFunction INITIAL_FRACTAL_FUNCTION = new DummyFractalFunction();
+import static controller.FractalConstants.INITIAL_AREA;
+import static controller.FractalConstants.INITIAL_FRACTAL_FUNCTION;
+import static controller.FractalConstants.INITIAL_MAX_DEPTH;
+
+public final class FractalController implements MainFrameEventListener {
 
     private FractalWorker worker;
     private MainFrame frame;
     private DepthPaintersRepository paintersRepository;
+    private FractalImageController imageController;
     private int currentPainterIndex;
 
-    public FractalController(FractalWorkerMulti worker, MainFrame frame, DepthPaintersRepository paintersRepository) {
+    public FractalController(FractalWorkerMulti worker, MainFrame frame,
+                             DepthPaintersRepository paintersRepository, FractalImageController imageController) {
         this.worker = worker;
         this.frame = frame;
         this.paintersRepository = paintersRepository;
+        this.imageController = imageController;
         this.currentPainterIndex = 0;
 
         worker.setEvaluator(new MandelbrotFractalEvaluator(
@@ -37,20 +43,52 @@ public final class FractalController implements MainFrameEventListener {
     }
 
     private void initFields() {
-        RectArea area = worker.getArea();
-        // TODO: Implement
+        // Coordinates
+        CircleArea fractalArea = imageController.getFractalArea();
+
+        SwingUtilities.invokeLater(() -> {
+            frame.setXField(fractalArea.getCenterX().toString());
+            frame.setYField(fractalArea.getCenterY().toString());
+            frame.setFractalViewSizeField(fractalArea.getDiameter().toString());
+        });
     }
 
     @Override
     public void updateClicked() {
         System.out.println("Update clicked!");
-        // TODO: Implement
+    }
+
+    private void updateCircleArea(CircleArea area) {
+        frame.setXField(area.getCenterX().toString());
+        frame.setYField(area.getCenterY().toString());
+        frame.setFractalViewSizeField(area.getDiameter().toString());
+        imageController.setFractalArea(area);
+    }
+
+    @Override
+    public void moveClicked() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Mfloat centerX = Number.buildFloat(frame.getXField());
+                Mfloat centerY = Number.buildFloat(frame.getYField());
+                Mfloat diameter = Number.buildFloat(frame.getFractalViewSizeField());
+                CircleArea area = new CircleArea(centerX, centerY, diameter);
+                updateCircleArea(area);
+            } catch (NumberFormatException e) {
+                System.out.println(String.format("Number format error: %s", e));
+            }
+        });
     }
 
     @Override
     public void resetZoomClicked() {
-        System.out.println("Zoom clicked!");
-        // TODO: Implement
+        SwingUtilities.invokeLater(() -> {
+            try {
+                updateCircleArea(INITIAL_AREA);
+            } catch (NumberFormatException e) {
+                System.out.println(String.format("Number format error: %s", e));
+            }
+        });
     }
 
     @Override

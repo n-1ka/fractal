@@ -1,34 +1,15 @@
 package controller;
 
-import fractal.worker.FractalDepthPainter;
-import fractal.worker.FractalWorker;
 import fractal.worker.FractalWorkerMulti;
-import mandelbrot.DummyFractalDepthPainter;
-import mandelbrot.GrayFractalDepthPainter;
-import math.CircleArea;
-import math.Number;
-import repository.DepthPaintersRepository;
-import view.FractalPanel;
+import view.ImagePanel;
 import view.main_frame.MainFrame;
 
 import javax.swing.*;
-import java.util.HashMap;
-import java.util.Map;
+
+import static controller.FractalConstants.INITIAL_AREA;
+import static controller.FractalConstants.PAINTERS_REPOSITORY;
 
 public final class Main {
-
-    private static final Map<String, FractalDepthPainter> DEPTH_PAINTERS = new HashMap<>();
-    private static final CircleArea INITIAL_AREA = new CircleArea(
-            Number.buildFloat(0.0),
-            Number.buildFloat(0.0),
-            Number.buildFloat(4.0));
-    private static final DepthPaintersRepository PAINTERS_REPOSITORY = DepthPaintersRepository.getInstance();
-
-    static {
-        DEPTH_PAINTERS.put("default", new DummyFractalDepthPainter());
-        DEPTH_PAINTERS.put("grey", new GrayFractalDepthPainter());
-    }
-
 
     private static FractalWorkerMulti buildFractalWorker() {
         FractalWorkerMulti worker = new FractalWorkerMulti(4, 4);
@@ -36,9 +17,8 @@ public final class Main {
         return worker;
     }
 
-    private static MainFrame buildMainFrame(FractalWorker worker) {
-        MainFrame mainFrame = new MainFrame(new FractalPanel(worker, INITIAL_AREA),
-                PAINTERS_REPOSITORY.getDepthPainterNames());
+    private static MainFrame buildMainFrame(ImagePanel imagePanel) {
+        MainFrame mainFrame = new MainFrame(imagePanel, PAINTERS_REPOSITORY.getDepthPainterNames());
 
         SwingUtilities.invokeLater(() -> {
             mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -51,8 +31,12 @@ public final class Main {
 
     public static void main(String[] args) {
         FractalWorkerMulti worker = buildFractalWorker();
-        MainFrame mainFrame = buildMainFrame(worker);
-        new FractalController(worker, mainFrame, PAINTERS_REPOSITORY);
+
+        ImagePanel imagePanel = new ImagePanel();
+        MainFrame mainFrame = buildMainFrame(imagePanel);
+        FractalImageController imageController = new FractalImageController(worker, INITIAL_AREA, imagePanel);
+
+        new FractalController(worker, mainFrame, PAINTERS_REPOSITORY, imageController);
     }
 
 }
