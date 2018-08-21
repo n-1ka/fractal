@@ -16,7 +16,7 @@ public final class MainFrame extends JFrame implements ActionListener {
     private JTextField fractalXField;
     private JTextField fractalYField;
     private JTextField fractalViewSizeField;
-    private JTextField pixelSizeField;
+    private JTextField pixelsField;
     private JTextField fractalDepthField;
     private JTextField fractalEdgeField;
     private JComboBox fractalPainterDropdown;
@@ -62,12 +62,12 @@ public final class MainFrame extends JFrame implements ActionListener {
         return getFieldValue(fractalViewSizeField);
     }
 
-    public void setPixelSizeField(String value) {
-        setFieldValue(pixelSizeField, value);
+    public void setPixelsField(String value) {
+        setFieldValue(pixelsField, value);
     }
 
-    public String getPixelSizeField() {
-        return getFieldValue(pixelSizeField);
+    public String getPixelsField() {
+        return getFieldValue(pixelsField);
     }
 
     public void setFractalDepthField(String value) {
@@ -172,9 +172,9 @@ public final class MainFrame extends JFrame implements ActionListener {
         JPanel res = new JPanel();
         res.setLayout(new FlowLayout());
 
-        res.add(new JLabel("Pixel size: "));
-        pixelSizeField = new JTextField(5);
-        res.add(pixelSizeField);
+        res.add(new JLabel("Pixels (approx): "));
+        pixelsField = new JTextField(10);
+        res.add(pixelsField);
 
         res.add(new JLabel("Depth: "));
         fractalDepthField = new JTextField(5);

@@ -7,6 +7,7 @@ import view.main_frame.MainFrame;
 import javax.swing.*;
 
 import static controller.FractalConstants.INITIAL_AREA;
+import static controller.FractalConstants.INITIAL_PIXELS;
 import static controller.FractalConstants.PAINTERS_REPOSITORY;
 
 public final class Main {
@@ -34,7 +35,7 @@ public final class Main {
 
         ImagePanel imagePanel = new ImagePanel();
         MainFrame mainFrame = buildMainFrame(imagePanel);
-        FractalImageController imageController = new FractalImageController(worker, INITIAL_AREA, imagePanel);
+        FractalImageController imageController = new FractalImageController(worker, INITIAL_AREA, imagePanel, INITIAL_PIXELS);
 
         new FractalController(worker, mainFrame, PAINTERS_REPOSITORY, imageController);
     }
