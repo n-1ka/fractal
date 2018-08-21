@@ -1,7 +1,5 @@
 package view.main_frame;
 
-import view.FractalPanel;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,6 +11,7 @@ public final class MainFrame extends JFrame implements ActionListener {
 
     private static final int FLOAT_INPUT_SIZE = 16;
 
+    private JButton moveButton;
     private JButton resetZoomButton;
     private JTextField fractalXField;
     private JTextField fractalYField;
@@ -23,11 +22,11 @@ public final class MainFrame extends JFrame implements ActionListener {
     private JComboBox fractalPainterDropdown;
     private JButton updateButton;
 
-    private FractalPanel panel;
+    private JPanel middlePanel;
     private List<MainFrameEventListener> listeners;
 
-    public MainFrame(FractalPanel panel, List<String> depthPainters) {
-        this.panel = panel;
+    public MainFrame(JPanel middlePanel, List<String> depthPainters) {
+        this.middlePanel = middlePanel;
         this.listeners = new ArrayList<>();
 
         add(buildCenterUI());
@@ -43,7 +42,7 @@ public final class MainFrame extends JFrame implements ActionListener {
         setFieldValue(fractalXField, value);
     }
 
-    public String getXField() throws InterruptedException {
+    public String getXField() {
         return getFieldValue(fractalXField);
     }
 
@@ -51,7 +50,7 @@ public final class MainFrame extends JFrame implements ActionListener {
         setFieldValue(fractalYField, value);
     }
 
-    public String getYField() throws InterruptedException {
+    public String getYField() {
         return getFieldValue(fractalYField);
     }
 
@@ -59,7 +58,7 @@ public final class MainFrame extends JFrame implements ActionListener {
         setFieldValue(fractalViewSizeField, value);
     }
 
-    public String getFractalViewSizeField() throws InterruptedException {
+    public String getFractalViewSizeField() {
         return getFieldValue(fractalViewSizeField);
     }
 
@@ -67,7 +66,7 @@ public final class MainFrame extends JFrame implements ActionListener {
         setFieldValue(pixelSizeField, value);
     }
 
-    public String getPixelSizeField() throws InterruptedException {
+    public String getPixelSizeField() {
         return getFieldValue(pixelSizeField);
     }
 
@@ -75,7 +74,7 @@ public final class MainFrame extends JFrame implements ActionListener {
         setFieldValue(fractalDepthField, value);
     }
 
-    public String getFractalDepthField() throws InterruptedException {
+    public String getFractalDepthField() {
         return getFieldValue(fractalDepthField);
     }
 
@@ -99,11 +98,15 @@ public final class MainFrame extends JFrame implements ActionListener {
         listeners.forEach(MainFrameEventListener::resetZoomClicked);
     }
 
+    private void notifyMoveClicked() {
+        listeners.forEach(MainFrameEventListener::moveClicked);
+    }
+
     private void notifyPainterChanged(String painterName) {
         listeners.forEach(l -> l.fractalPainterChanged(painterName));
     }
 
-    private String getFieldValue(JTextField field) throws InterruptedException {
+    private String getFieldValue(JTextField field) {
 //        AtomicReference<String> value = new AtomicReference<>("");
 //        try {
 //            SwingUtilities.invokeAndWait(() -> value.set(field.getText()));
@@ -120,16 +123,12 @@ public final class MainFrame extends JFrame implements ActionListener {
     }
 
     private Component buildCenterUI() {
-        return panel;
+        return middlePanel;
     }
 
     private Component buildNorthUI() {
         JPanel res = new JPanel();
         res.setLayout(new FlowLayout());
-
-        resetZoomButton = new JButton("Reset Zoom");
-        resetZoomButton.addActionListener(this);
-        res.add(resetZoomButton);
 
         res.add(new JLabel("Center coordinates (x, y): "));
         fractalXField = new JTextField(FLOAT_INPUT_SIZE);
@@ -140,6 +139,15 @@ public final class MainFrame extends JFrame implements ActionListener {
         res.add(new JLabel("View getArea size: "));
         fractalViewSizeField = new JTextField(FLOAT_INPUT_SIZE);
         res.add(fractalViewSizeField);
+
+        moveButton = new JButton("Move");
+        moveButton.addActionListener(this);
+        res.add(moveButton);
+
+        resetZoomButton = new JButton("Reset Zoom");
+        resetZoomButton.addActionListener(this);
+        res.add(resetZoomButton);
+
 
         return res;
     }
@@ -191,7 +199,9 @@ public final class MainFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
-        if (source == resetZoomButton) {
+        if (source == moveButton) {
+            notifyMoveClicked();
+        } if (source == resetZoomButton) {
             notifyRezetZoomClicked();
         } else if (source == updateButton) {
             notifyUpdateClicked();
