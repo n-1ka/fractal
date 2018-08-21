@@ -134,7 +134,7 @@ public class FractalWorkerMulti extends Thread implements FractalWorker, Fractal
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                workers[i][j].setImage(image.getSubimage(j * w, i * h, w, h));
+                workers[i][j].setImage(image.getSubimage(j * w, (rows - i - 1) * h, w, h));
             }
         }
     }

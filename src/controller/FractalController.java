@@ -43,6 +43,7 @@ public final class FractalController implements MainFrameEventListener {
                 paintersRepository.getPainter(currentPainterIndex),
                 INITIAL_FRACTAL_FUNCTION
         );
+        this.imageController.addFractalImageUpdateListener(this::updateFrameCircleAreaLabels);
 
         worker.setEvaluator(evaluator);
 
@@ -90,10 +91,14 @@ public final class FractalController implements MainFrameEventListener {
         });
     }
 
-    private void updateCircleArea(CircleArea area) {
+    private void updateFrameCircleAreaLabels(CircleArea area) {
         frame.setXField(area.getCenterX().toString());
         frame.setYField(area.getCenterY().toString());
         frame.setFractalViewSizeField(area.getDiameter().toString());
+    }
+
+    private void updateCircleArea(CircleArea area) {
+        updateFrameCircleAreaLabels(area);
         imageController.setFractalArea(area);
     }
 
