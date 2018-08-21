@@ -45,17 +45,27 @@ public final class FractalController implements MainFrameEventListener {
     private void initFields() {
         // Coordinates
         CircleArea fractalArea = imageController.getFractalArea();
+        int pixels = imageController.getPixels();
 
         SwingUtilities.invokeLater(() -> {
             frame.setXField(fractalArea.getCenterX().toString());
             frame.setYField(fractalArea.getCenterY().toString());
             frame.setFractalViewSizeField(fractalArea.getDiameter().toString());
+
+            frame.setPixelsField(String.valueOf(pixels));
         });
     }
 
     @Override
     public void updateClicked() {
-        System.out.println("Update clicked!");
+        SwingUtilities.invokeLater(() -> {
+            try {
+                int pixels = Integer.parseInt(frame.getPixelsField());
+                imageController.setPixels(pixels);
+            } catch (NumberFormatException e) {
+                System.out.println(String.format("Pixel field format error: %s", e));
+            }
+        });
     }
 
     private void updateCircleArea(CircleArea area) {
