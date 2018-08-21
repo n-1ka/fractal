@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FractalImageController implements ComponentListener, FractalWorkerListener {
 
@@ -19,15 +21,26 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
     private ImagePanel imagePanel;
     private int pixels;
 
+    private List<FractalAreaUpdateListener> areaUpdateListeners;
+
     public FractalImageController(FractalWorker worker, CircleArea fractalArea, ImagePanel imagePanel, int pixels) {
         this.worker = worker;
         this.currentImage = null;
         this.fractalArea = fractalArea;
         this.imagePanel = imagePanel;
         this.pixels = pixels;
+        this.areaUpdateListeners = new ArrayList<>();
 
         imagePanel.addComponentListener(this);
         worker.addFractalWorkerListener(this);
+    }
+
+    public void addFractalImageUpdateListener(FractalAreaUpdateListener listener) {
+        areaUpdateListeners.add(listener);
+    }
+
+    private void notifyFractalImageUpdate(CircleArea area) {
+        areaUpdateListeners.forEach(l -> l.fractalAreaUpdated(area));
     }
 
     public CircleArea getFractalArea() {
@@ -37,6 +50,7 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
     public void setFractalArea(CircleArea fractalArea) {
         this.fractalArea = fractalArea;
         updateImage(true);
+        notifyFractalImageUpdate(fractalArea);
     }
 
     public int getPixels() {

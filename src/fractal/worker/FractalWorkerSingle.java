@@ -126,7 +126,7 @@ public class FractalWorkerSingle extends Thread implements FractalWorker {
 
                 Color color = task.evaluator.evaluate(value);
 
-                task.image.setRGB(i, j, color.getRGB());
+                task.image.setRGB(i, (imageHeight - j - 1), color.getRGB());
 
                 isInterrupted = taskUpdateQueue.size() > 0;
             }

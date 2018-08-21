@@ -2,9 +2,12 @@ package controller;
 
 import fractal.worker.FractalWorkerMulti;
 import view.ImagePanel;
+import view.ZoomableImagePanel;
 import view.main_frame.MainFrame;
 
 import javax.swing.*;
+
+import java.awt.*;
 
 import static controller.FractalConstants.INITIAL_AREA;
 import static controller.FractalConstants.INITIAL_PIXELS;
@@ -33,11 +36,12 @@ public final class Main {
     public static void main(String[] args) {
         FractalWorkerMulti worker = buildFractalWorker();
 
-        ImagePanel imagePanel = new ImagePanel();
+        ZoomableImagePanel imagePanel = new ZoomableImagePanel(Color.RED);
         MainFrame mainFrame = buildMainFrame(imagePanel);
         FractalImageController imageController = new FractalImageController(worker, INITIAL_AREA, imagePanel, INITIAL_PIXELS);
 
         new FractalController(worker, mainFrame, PAINTERS_REPOSITORY, imageController);
+        new FractalZoomController(imagePanel, imageController);
     }
 
 }
