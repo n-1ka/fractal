@@ -21,6 +21,6 @@ class FractalConstants {
 
     static final DepthPaintersRepository PAINTERS_REPOSITORY = DepthPaintersRepository.getInstance();
 
-    static final int INITIAL_PIXELS = 1000000;
+    static final int INITIAL_PIXEL_SCALE = 2;
 
 }

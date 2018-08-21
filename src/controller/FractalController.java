@@ -54,7 +54,7 @@ public final class FractalController implements MainFrameEventListener {
     private void initFields() {
         // Coordinates
         CircleArea fractalArea = imageController.getFractalArea();
-        int pixels = imageController.getPixels();
+        int pixelScale = imageController.getPixelScale();
         int depth = evaluator.getDepth();
         Mfloat edge = evaluator.getEdge();
 
@@ -63,7 +63,7 @@ public final class FractalController implements MainFrameEventListener {
             frame.setYField(fractalArea.getCenterY().toString());
             frame.setFractalViewSizeField(fractalArea.getDiameter().toString());
 
-            frame.setPixelsField(String.valueOf(pixels));
+            frame.setPixelScaleField(String.valueOf(pixelScale));
             frame.setFractalDepthField(String.valueOf(depth));
             frame.setFractalEdgeField(String.valueOf(edge));
         });
@@ -73,7 +73,7 @@ public final class FractalController implements MainFrameEventListener {
     public void updateClicked() {
         SwingUtilities.invokeLater(() -> {
             try {
-                int pixels = Integer.parseInt(frame.getPixelsField());
+                int pixelScale = Integer.parseInt(frame.getPixelScaleField());
                 int depth = Integer.parseInt(frame.getFractalDepthField());
                 Mfloat edge = Number.buildFloat(frame.getFractalEdgeField());
                 FractalDepthPainter depthPainter = paintersRepository.getDepthPainter(
@@ -83,7 +83,7 @@ public final class FractalController implements MainFrameEventListener {
                         evaluator.getFunction()     // TODO: Implement function update feature
                 );
 
-                imageController.setPixels(pixels);
+                imageController.setPixelSscale(pixelScale);
                 worker.setEvaluator(newEvaluator);
             } catch (NumberFormatException e) {
                 System.out.println(String.format("Number field format error: %s", e));
