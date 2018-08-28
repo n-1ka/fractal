@@ -2,8 +2,10 @@ package fractal.worker;
 
 import math.Mcomplex;
 
+import java.util.Iterator;
+
 public interface FractalFunction {
 	
-	Mcomplex evaluate(Mcomplex prevResult, Mcomplex value);
+	Iterator<Mcomplex> evaluate(Mcomplex value);
 
 }

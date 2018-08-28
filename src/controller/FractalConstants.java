@@ -1,7 +1,8 @@
 package controller;
 
 import fractal.worker.FractalFunction;
-import mandelbrot.DummyFractalFunction;
+import mandelbrot.JuliaFractalFunction;
+import mandelbrot.MandelbrotFractalFunction;
 import math.CircleArea;
 import math.Number;
 import repository.DepthPaintersRepository;
@@ -12,7 +13,8 @@ class FractalConstants {
 
     static final int INITIAL_EDGE = 2;
 
-    static final FractalFunction INITIAL_FRACTAL_FUNCTION = new DummyFractalFunction();
+//    static final FractalFunction INITIAL_FRACTAL_FUNCTION = new JuliaFractalFunction(Number.buildComplex(-0.4, 0.6));
+    static final FractalFunction INITIAL_FRACTAL_FUNCTION = new MandelbrotFractalFunction();
 
     static final CircleArea INITIAL_AREA = new CircleArea(
             Number.buildFloat(0.0),

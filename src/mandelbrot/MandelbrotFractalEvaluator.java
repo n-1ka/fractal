@@ -1,13 +1,13 @@
 package mandelbrot;
 
 import java.awt.Color;
+import java.util.Iterator;
 
 import fractal.worker.FractalFunction;
 import fractal.worker.FractalDepthPainter;
 import fractal.worker.FractalEvaluator;
 import math.Mcomplex;
 import math.Mfloat;
-import math.Number;
 
 public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	
@@ -63,15 +63,21 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 	@Override
 	public Color evaluate(Mcomplex value) {
 		Mfloat edgeSquared = edge.mul(edge);
-		Mcomplex result = Number.buildComplex(0, 0);
 
 		int depth = 0;
-		while (depth < maxDepth && 
-				squareAbs(result).compareTo(edgeSquared) < 0) {
-			result = function.evaluate(result, value);
-			depth++;
+		Iterator<Mcomplex> sequence = function.evaluate(value);
+
+		while (sequence.hasNext()) {
+			Mcomplex next = sequence.next();
+            depth++;
+
+			if (depth >= maxDepth || squareAbs(next).compareTo(edgeSquared) > 0) {
+				break;
+			}
 		}
 
+		if (depth == maxDepth)
+            System.out.println("YES");
 		return painter.generateColor(depth, maxDepth);
 	}
 
