@@ -12,7 +12,12 @@ import repository.DepthPaintersRepository;
 import view.main_frame.MainFrame;
 import view.main_frame.MainFrameEventListener;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 import static controller.FractalConstants.*;
 
@@ -132,6 +137,18 @@ public final class FractalController implements MainFrameEventListener {
     public void fractalPainterChanged(String painterName) {
         System.out.println("Painter changed to : " + painterName);
         // TODO: Implement
+    }
+
+    @Override
+    public void saveImage(File file) {
+        new Thread(() -> {
+            try {
+                BufferedImage image = worker.getImage();
+                ImageIO.write(image, "png", file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
 }

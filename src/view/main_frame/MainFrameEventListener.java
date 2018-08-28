@@ -1,5 +1,7 @@
 package view.main_frame;
 
+import java.io.File;
+
 public interface MainFrameEventListener {
 
     void updateClicked();
@@ -9,5 +11,7 @@ public interface MainFrameEventListener {
     void resetZoomClicked();
 
     void fractalPainterChanged(String painterName);
+
+    void saveImage(File file);
 
 }

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,6 +111,10 @@ public final class MainFrame extends JFrame implements ActionListener {
         listeners.forEach(l -> l.fractalPainterChanged(painterName));
     }
 
+    private void notifySaveImage(File file) {
+        listeners.forEach(l -> l.saveImage(file));
+    }
+
     private String getFieldValue(JTextField field) {
 //        AtomicReference<String> value = new AtomicReference<>("");
 //        try {
@@ -152,6 +157,30 @@ public final class MainFrame extends JFrame implements ActionListener {
         resetZoomButton.addActionListener(this);
         res.add(resetZoomButton);
 
+        JButton saveButton = new JButton("Save image");
+        saveButton.addActionListener(actionEvent -> {
+            JFileChooser saveFileChooser = new JFileChooser();
+            saveFileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+
+            int returnValue = saveFileChooser.showOpenDialog(MainFrame.this);
+            if (returnValue != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            File selectedFile = saveFileChooser.getSelectedFile();
+
+            if (selectedFile.exists()) {
+                int overwrite = JOptionPane.showConfirmDialog(
+                        MainFrame.this,
+                        "File already exists, overwrite?",
+                        "Overwrite file?", JOptionPane.YES_NO_OPTION);
+                if (overwrite != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
+
+            notifySaveImage(selectedFile);
+        });
+        res.add(saveButton);
 
         return res;
     }
