@@ -25,4 +25,6 @@ class FractalConstants {
 
     static final int INITIAL_PIXEL_SCALE = 2;
 
+    static final int IMAGE_REFRESH_RATE_MS = 500;
+
 }

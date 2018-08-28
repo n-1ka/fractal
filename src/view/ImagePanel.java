@@ -6,9 +6,11 @@ import java.awt.*;
 public class ImagePanel extends JPanel {
 
     private Image image;
+    private int version;
 
     public ImagePanel(Image image) {
         this.image = image;
+        this.version = 0;
 
         if (image != null) {
             setSize(image.getWidth(this), image.getWidth(this));
@@ -26,6 +28,11 @@ public class ImagePanel extends JPanel {
 
     public Image getImage() {
         return image;
+    }
+
+    public void refreshImage() {
+        image.flush();
+        repaint();
     }
 
     @Override
