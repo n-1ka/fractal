@@ -21,11 +21,11 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
     private BufferedImage currentImage;
     private CircleArea fractalArea;
     private ImagePanel imagePanel;
-    private int pixelScale;
+    private double pixelScale;
 
     private List<FractalAreaUpdateListener> areaUpdateListeners;
 
-    public FractalImageController(FractalWorker worker, CircleArea fractalArea, ImagePanel imagePanel, int pixelScale) {
+    public FractalImageController(FractalWorker worker, CircleArea fractalArea, ImagePanel imagePanel, double pixelScale) {
         this.worker = worker;
         this.currentImage = null;
         this.fractalArea = fractalArea;
@@ -55,18 +55,18 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
         notifyFractalImageUpdate(fractalArea);
     }
 
-    public int getPixelScale() {
+    public double getPixelScale() {
         return pixelScale;
     }
 
-    public void setPixelSscale(int pixelScale) {
+    public void setPixelScale(double pixelScale) {
         this.pixelScale = pixelScale;
         updateImage(true);
     }
 
     private void updateImage(boolean force) {
-        int width = imagePanel.getWidth()/pixelScale;
-        int height = imagePanel.getHeight()/pixelScale;
+        int width = (int)(imagePanel.getWidth()/pixelScale);
+        int height = (int)(imagePanel.getHeight()/pixelScale);
 
         if (width > 0 && height > 0 &&
                 (force || currentImage == null ||
