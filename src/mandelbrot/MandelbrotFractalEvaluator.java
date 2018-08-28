@@ -76,8 +76,6 @@ public class MandelbrotFractalEvaluator implements FractalEvaluator {
 			}
 		}
 
-		if (depth == maxDepth)
-            System.out.println("YES");
 		return painter.generateColor(depth, maxDepth);
 	}
 

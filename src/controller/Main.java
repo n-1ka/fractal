@@ -9,14 +9,12 @@ import javax.swing.*;
 
 import java.awt.*;
 
-import static controller.FractalConstants.INITIAL_AREA;
-import static controller.FractalConstants.INITIAL_PIXEL_SCALE;
-import static controller.FractalConstants.PAINTERS_REPOSITORY;
+import static controller.FractalConstants.*;
 
 public final class Main {
 
     private static FractalWorkerMulti buildFractalWorker() {
-        FractalWorkerMulti worker = new FractalWorkerMulti(4, 4);
+        FractalWorkerMulti worker = new FractalWorkerMulti(6, 6);
         worker.start();
         return worker;
     }
@@ -38,6 +36,11 @@ public final class Main {
 
         ZoomableImagePanel imagePanel = new ZoomableImagePanel(Color.RED);
         MainFrame mainFrame = buildMainFrame(imagePanel);
+
+        Timer timer = new Timer(IMAGE_REFRESH_RATE_MS, (e) -> imagePanel.refreshImage());
+        timer.setRepeats(true);
+        timer.start();
+
         FractalImageController imageController = new FractalImageController(worker, INITIAL_AREA, imagePanel, INITIAL_PIXEL_SCALE);
 
         new FractalController(worker, mainFrame, PAINTERS_REPOSITORY, imageController);
