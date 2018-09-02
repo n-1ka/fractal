@@ -1,15 +1,39 @@
 package fractal.new_worker;
 
-public interface Task <E> {
+import java.util.concurrent.CopyOnWriteArrayList;
 
-    E execute();
+public abstract class Task <E> {
 
-    int getJobId();
+    private boolean isInterrupted;
+    private CopyOnWriteArrayList<TaskListener<E>> listeners;
 
-    void interrupt();
+    public Task() {
+        this.isInterrupted = false;
+        this.listeners = new CopyOnWriteArrayList<>();
+    }
 
-    default Interrupter getInterrupter() {
-        return Task.this::interrupt;
+    public abstract E execute();
+
+    public final void notifyTaskExecuted(E value) {
+        if (value != null) {
+            listeners.forEach(l -> l.onTaskCompleted(this, value));
+        }
+    }
+
+    public final void addTaskListener(TaskListener<E> listener) {
+        listeners.addIfAbsent(listener);
+    }
+
+    public final void removeTaskListener(TaskListener<E> listener) {
+        listeners.remove(listener);
+    }
+
+    public final void interrupt() {
+        this.isInterrupted = true;
+    }
+
+    public final boolean isInterrupted(){
+        return isInterrupted;
     }
 
 }

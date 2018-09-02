@@ -2,27 +2,26 @@ package test;
 
 import fractal.new_worker.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ThreadWorkerTest {
 
-    private static class CountingTask implements Task<Integer> {
+    private static class CountingTask extends SplittableTask<Integer, Integer, Task<Integer>> {
 
         private Integer start, end;
-        private boolean isRunning;
 
         public CountingTask(Integer start, Integer end) {
             this.start = start;
             this.end = end;
-            this.isRunning = true;
         }
 
-        @Override
         public Integer execute() {
             Integer res = 0;
 
-            while (isRunning) {
+            while (!isInterrupted()) {
                 if (start > end) {
                     return res;
                 }
@@ -34,13 +33,12 @@ public class ThreadWorkerTest {
         }
 
         @Override
-        public void interrupt() {
-            isRunning = false;
-        }
-
-        @Override
-        public int getJobId() {
-            return 0;
+        public List<Task<Integer>> splitTask() {
+            int mid = (this.end - start) / 2;
+            return Arrays.asList(
+                    new CountingTask(start, mid),
+                    new CountingTask(mid + 1, end)
+            );
         }
 
     }
@@ -49,19 +47,18 @@ public class ThreadWorkerTest {
         Semaphore wait = new Semaphore(0);
         AtomicReference<E> res = new AtomicReference<>();
 
-        TaskListener<E, T> listener = (finishedTask, value) -> {
+        TaskListener<E> listener = (finishedTask, value) -> {
             if (task == finishedTask) {
                 res.set(value);
-                System.out.println("RES = " + String.valueOf(value));
                 wait.release();
             }
         };
 
-        worker.addTaskListener(listener);
+        task.addTaskListener(listener);
         worker.executeTask(task);
         wait.acquire();
 
-        worker.removeTaskListener(listener);
+        task.removeTaskListener(listener);
 
         return res.get();
     }
@@ -76,11 +73,16 @@ public class ThreadWorkerTest {
 
     public static void main(String[] args) throws InterruptedException {
         ThreadWorker<Integer, CountingTask> worker = new ThreadWorker<>();
+        MultiThreadWorker<Integer, Task<Integer>, CountingTask> multiWorker = new MultiThreadWorker<>(
+                ThreadWorker::new,
+                2
+        );
         worker.start();
+        multiWorker.start();
 
         int from = 0;
         int to = 10000;
-        System.out.println(run(worker, new CountingTask(from, to)));
+        System.out.println(run(multiWorker, new CountingTask(from, to)));
         System.out.println(sum(from, to));
 
         worker.interrupt();

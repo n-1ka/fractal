@@ -6,8 +6,8 @@ public interface Worker <V, T extends Task<V>> {
 
     void stopAllTasks();
 
-    void addTaskListener(TaskListener<V, T> listener);
+    void start();
 
-    void removeTaskListener(TaskListener<V, T> listener);
+    void interrupt();
 
 }

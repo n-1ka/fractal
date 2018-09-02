@@ -2,8 +2,8 @@ package fractal.new_worker;
 
 import java.util.List;
 
-public interface SplittableTask<E, S extends Task<E>> extends Task<E> {
+public abstract class SplittableTask<E, EV, S extends Task<EV>> extends Task<E> {
 
-    List<S> splitTask();
+    public abstract List<S> splitTask();
 
 }

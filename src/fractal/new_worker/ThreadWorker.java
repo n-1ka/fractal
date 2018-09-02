@@ -1,18 +1,15 @@
 package fractal.new_worker;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ThreadWorker <V, T extends Task<V>> extends Thread implements Worker<V, T> {
 
     private BlockingQueue<T> taskQueue;
-    private ConcurrentLinkedQueue<TaskListener<V, T>> taskListeners;
     private T currentTask;
 
     public ThreadWorker(BlockingQueue<T> taskQueue) {
         this.taskQueue = taskQueue;
-        this.taskListeners = new ConcurrentLinkedQueue<>();
         this.currentTask = null;
     }
 
@@ -38,25 +35,11 @@ public class ThreadWorker <V, T extends Task<V>> extends Thread implements Worke
         }
     }
 
-    @Override
-    public void addTaskListener(TaskListener<V, T> listener) {
-        taskListeners.add(listener);
-    }
-
-    @Override
-    public void removeTaskListener(TaskListener<V, T> listener) {
-        taskListeners.remove(listener);
-    }
-
-    protected void notifyTaskCompleted(T task, V value) {
-        taskListeners.forEach(l -> l.onTaskCompleted(task, value));
-    }
-
-    protected void runTask(T task) {
+    private void runTask(T task) {
         V value = task.execute();
 
         if (value != null) {
-            notifyTaskCompleted(task, value);
+            task.notifyTaskExecuted(value);
         }
     }
 

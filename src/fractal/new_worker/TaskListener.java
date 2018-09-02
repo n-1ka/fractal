@@ -1,7 +1,7 @@
 package fractal.new_worker;
 
-public interface TaskListener <V, T extends Task<V>> {
+public interface TaskListener <E> {
 
-    void onTaskCompleted(T task, V value);
+    void onTaskCompleted(Task<E> task, E value);
 
 }
