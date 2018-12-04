@@ -1,64 +1,41 @@
 package fractal.new_worker;
 
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import fractal.new_worker.task.Task;
 
-public class MultiThreadWorker<V, S extends Task<V>, T extends SplittableTask<V, S>>
-        extends Thread implements Worker <V, T> {
+import java.util.concurrent.*;
 
-    private CopyOnWriteArrayList<Worker<V, S>> workers;
-    private BlockingQueue<T> taskQueue;
-    private BlockingQueue<S> subTaskQueue;
+public class MultiThreadWorker extends Thread implements Worker {
 
-    public MultiThreadWorker(BlockingQueue<T> taskQueue, WorkerFactory<V, S> workerFactory, int nWorkers) {
+    private BlockingQueue<Task> taskQueue;
+    private BlockingQueue<Task> allSubtask;
+    private BlockingDeque<ThreadWorker> workers;
+
+    public MultiThreadWorker(BlockingQueue<Task> taskQueue, int nThreads) {
         this.taskQueue = taskQueue;
-        this.subTaskQueue = new LinkedBlockingQueue<>();
-        this.workers = new CopyOnWriteArrayList<>();
+        this.allSubtask = new LinkedBlockingQueue<>();
+        this.workers = new LinkedBlockingDeque<>();
 
-        for (int i = 0; i < nWorkers; i++) {
-            Worker<V, S> subWorker = workerFactory.buildWorker(subTaskQueue);
-            subWorker.start();
-            workers.add(subWorker);
+        for (int i = 0; i < nThreads; i++) {
+            this.workers.add(new ThreadWorker(this.allSubtask));
         }
     }
 
-    public MultiThreadWorker(WorkerFactory<V, S> workerFactory, int nWorkers) {
-        this(new LinkedBlockingQueue<>(), workerFactory, nWorkers);
+    public MultiThreadWorker(int nThreads) {
+        this(new LinkedBlockingQueue<>(), nThreads);
     }
 
     @Override
-    public void executeTask(T task) {
-        taskQueue.add(task);
-    }
-
-    @Override
-    public void stopAllTasks() {
-
-    }
-
-    private void runTask(T task) {
-        List<S> subTasks = task.splitTask();
-        AtomicInteger tasksLeft = new AtomicInteger(subTasks.size());
-
-        TaskListener<V> listener = (subTask, value) -> {
-            if (tasksLeft.decrementAndGet() == 0) {
-                task.notifyTaskExecuted(value);
-            }
-        };
-
-        for (S subTask : subTasks) {
-            subTask.addTaskListener(listener);
-            subTaskQueue.add(subTask);
+    public void execute(Task task) {
+        try {
+            taskQueue.put(task);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     private void mainLoop() throws InterruptedException {
         while (!isInterrupted()) {
-            T currentTask = taskQueue.take();
-            runTask(currentTask);
+            allSubtask.addAll(taskQueue.take().split());
         }
     }
 
@@ -67,7 +44,29 @@ public class MultiThreadWorker<V, S extends Task<V>, T extends SplittableTask<V,
         try {
             mainLoop();
         } catch (InterruptedException e) {
-            System.out.println(String.format("'%s' Thread is interrupted", getName()));
+            System.out.println(String.format("MultiThreadWorker: '%s' Thread is interrupted", getName()));
         }
     }
+
+    @Override
+    public synchronized void start() {
+        this.workers.forEach(Thread::start);
+        super.start();
+    }
+
+    @Override
+    public void interrupt() {
+        this.workers.forEach(Thread::interrupt);
+        super.interrupt();
+    }
+
+    public void joinAll() throws InterruptedException {
+        for (Thread worker : workers) {
+            worker.join();
+        }
+
+        this.join();
+    }
+
+
 }

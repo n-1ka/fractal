@@ -1,9 +1,11 @@
 package fractal.new_worker;
 
+import fractal.new_worker.task.Task;
+
 import java.util.concurrent.BlockingQueue;
 
-public interface WorkerFactory <V, T extends Task<V>> {
+public interface WorkerFactory {
 
-    Worker<V, T> buildWorker(BlockingQueue<T> taskQueue);
+    Worker buildWorker(BlockingQueue<Task> taskQueue);
 
 }
