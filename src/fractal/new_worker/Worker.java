@@ -1,13 +1,26 @@
 package fractal.new_worker;
 
-public interface Worker <V, T extends Task<V>> {
+import fractal.new_worker.task.Task;
 
-    void executeTask(T task);
+public interface Worker {
 
-    void stopAllTasks();
+    /**
+     * Worker executes task asynchronously.
+     * Worker must be running for task to be executed.
+     * @param task - Task
+     */
+    void execute(Task task);
 
+    /**
+     * Worker is started.
+     * It can be interrupted after this.
+     */
     void start();
 
+    /**
+     * Worker is interrupted.
+     * Worker is in finished state, can't be restarted.
+     */
     void interrupt();
 
 }

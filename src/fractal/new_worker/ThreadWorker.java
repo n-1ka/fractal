@@ -1,14 +1,16 @@
 package fractal.new_worker;
 
+import fractal.new_worker.task.Task;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ThreadWorker <V, T extends Task<V>> extends Thread implements Worker<V, T> {
+public class ThreadWorker extends Thread implements Worker {
 
-    private BlockingQueue<T> taskQueue;
-    private T currentTask;
+    private BlockingQueue<Task> taskQueue;
+    private Task currentTask;
 
-    public ThreadWorker(BlockingQueue<T> taskQueue) {
+    public ThreadWorker(BlockingQueue<Task> taskQueue) {
         this.taskQueue = taskQueue;
         this.currentTask = null;
     }
@@ -18,7 +20,7 @@ public class ThreadWorker <V, T extends Task<V>> extends Thread implements Worke
     }
 
     @Override
-    public void executeTask(T task) {
+    public void execute(Task task) {
         try {
             taskQueue.put(task);
         } catch (InterruptedException e) {
@@ -26,27 +28,10 @@ public class ThreadWorker <V, T extends Task<V>> extends Thread implements Worke
         }
     }
 
-    @Override
-    public void stopAllTasks() {
-        taskQueue.clear();
-
-        if (currentTask != null) {
-            currentTask.interrupt();
-        }
-    }
-
-    private void runTask(T task) {
-        V value = task.execute();
-
-        if (value != null) {
-            task.notifyTaskExecuted(value);
-        }
-    }
-
     private void mainLoop() throws InterruptedException {
         while (!isInterrupted()) {
             currentTask = taskQueue.take();
-            runTask(currentTask);
+            currentTask.run();
         }
     }
 
@@ -55,7 +40,11 @@ public class ThreadWorker <V, T extends Task<V>> extends Thread implements Worke
         try {
             mainLoop();
         } catch (InterruptedException e) {
-            System.out.println(String.format("'%s' Thread is interrupted", getName()));
+            System.out.println(String.format("ThreadWorker: '%s' Thread is interrupted", getName()));
+
+            if (currentTask != null) {
+                currentTask.interrupt();
+            }
         }
     }
 
