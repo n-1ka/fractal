@@ -1,8 +1,8 @@
 package test;
 
-import fractal.new_worker.MultiThreadWorker;
-import fractal.new_worker.task.AbstractAsyncTask;
-import fractal.new_worker.task.TaskListener;
+import fractal.worker.MultiThreadWorker;
+import fractal.worker.task.AbstractAsyncTask;
+import fractal.worker.task.TaskListener;
 
 import java.util.ArrayList;
 import java.util.List;

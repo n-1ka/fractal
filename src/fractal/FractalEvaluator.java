@@ -1,4 +1,4 @@
-package fractal.worker;
+package fractal;
 
 import math.Mcomplex;
 

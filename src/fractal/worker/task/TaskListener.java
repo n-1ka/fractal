@@ -1,4 +1,4 @@
-package fractal.new_worker.task;
+package fractal.worker.task;
 
 public interface TaskListener<E> {
 

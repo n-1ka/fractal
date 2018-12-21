@@ -1,6 +1,6 @@
 package mandelbrot;
 
-import fractal.worker.FractalDepthPainter;
+import fractal.FractalDepthPainter;
 
 import java.awt.*;
 

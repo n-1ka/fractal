@@ -1,6 +1,6 @@
 package mandelbrot;
 
-import fractal.worker.FractalFunction;
+import fractal.FractalFunction;
 import math.Mcomplex;
 
 import java.util.Iterator;

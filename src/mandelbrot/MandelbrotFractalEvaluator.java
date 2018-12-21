@@ -3,9 +3,9 @@ package mandelbrot;
 import java.awt.Color;
 import java.util.Iterator;
 
-import fractal.worker.FractalFunction;
-import fractal.worker.FractalDepthPainter;
-import fractal.worker.FractalEvaluator;
+import fractal.FractalFunction;
+import fractal.FractalDepthPainter;
+import fractal.FractalEvaluator;
 import math.Mcomplex;
 import math.Mfloat;
 

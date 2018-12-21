@@ -1,6 +1,6 @@
-package fractal.new_worker;
+package fractal.worker;
 
-import fractal.new_worker.task.Task;
+import fractal.worker.task.Task;
 
 public interface Worker {
 

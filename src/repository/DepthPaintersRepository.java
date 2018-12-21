@@ -1,6 +1,6 @@
 package repository;
 
-import fractal.worker.FractalDepthPainter;
+import fractal.FractalDepthPainter;
 import mandelbrot.DummyFractalDepthPainter;
 import mandelbrot.GrayFractalDepthPainter;
 

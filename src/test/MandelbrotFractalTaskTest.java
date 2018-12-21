@@ -1,7 +1,7 @@
 package test;
 
-import fractal.new_worker.ThreadWorker;
-import fractal.new_worker.Worker;
+import fractal.worker.MultiThreadWorker;
+import fractal.worker.Worker;
 import mandelbrot.*;
 import math.Number;
 import math.RectArea;
@@ -58,7 +58,7 @@ public class MandelbrotFractalTaskTest {
     }
 
     public static void main(String[] args) {
-        new MandelbrotFractalTaskTest(new ThreadWorker()).run();
+        new MandelbrotFractalTaskTest(new MultiThreadWorker(10)).run();
     }
 
 }
