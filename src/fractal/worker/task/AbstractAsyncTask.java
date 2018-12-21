@@ -1,15 +1,18 @@
-package fractal.new_worker.task;
+package fractal.worker.task;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E> {
 
     private List<TaskListener<E>> listeners;
     private boolean interrupted;
+    private List<AbstractAsyncTask<V, ?>> subTasks;
+    private AtomicReference<E> result;
 
     private class SubtaskObserver implements TaskListener<V> {
         private int nTasks;
@@ -28,7 +31,9 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
 
             if (finished.incrementAndGet() == nTasks) {
                 List<V> resList = new ArrayList<>(res);
-                notifyTaskFinished(joinSubResults(resList));
+                E res = joinSubResults(resList);
+                result.set(res);
+                notifyTaskFinished(res);
             }
         }
 
@@ -37,6 +42,8 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
     public AbstractAsyncTask() {
         this.listeners = new CopyOnWriteArrayList<>();
         this.interrupted = false;
+        this.subTasks = null;
+        this.result = new AtomicReference<>(null);
     }
 
     public abstract E runTask();
@@ -65,16 +72,26 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
 
     @Override
     public void run() {
-        E value = runTask();
+        E value = result.updateAndGet(e -> {
+            if (e == null) {
+                return runTask();
+            } else {
+                return e;
+            }
+        });
 
         if (value != null) {
+            result.set(value);
             notifyTaskFinished(value);
         }
     }
 
     @Override
-    public List<Task> split() {
-        List<AbstractAsyncTask<V, ?>> subTasks = splitTask();
+    public synchronized List<Task> split() {
+        if (subTasks == null) {
+            subTasks = splitTask();
+        }
+
         SubtaskObserver subtaskObserver = new SubtaskObserver(subTasks.size());
         subTasks.forEach(t -> t.addListener(subtaskObserver));
 
@@ -82,8 +99,12 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
     }
 
     @Override
-    public void interrupt() {
+    public synchronized void interrupt() {
         this.interrupted = true;
+
+        if (subTasks != null) {
+            subTasks.forEach(AbstractAsyncTask::interrupt);
+        }
     }
 
     protected boolean isInterrupted() {

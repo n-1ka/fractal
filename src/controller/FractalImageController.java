@@ -1,12 +1,11 @@
 package controller;
 
-import fractal.FractalWorkerListener;
-import fractal.worker.FractalWorker;
 import math.CircleArea;
 import util.MathUtil;
 import view.ImagePanel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
@@ -15,24 +14,24 @@ import java.util.List;
 
 public class FractalImageController implements ComponentListener, FractalWorkerListener {
 
-    private FractalWorker worker;
     private BufferedImage currentImage;
+    private FractalWorkerController workerController;
     private CircleArea fractalArea;
     private ImagePanel imagePanel;
     private double pixelScale;
 
     private List<FractalAreaUpdateListener> areaUpdateListeners;
 
-    public FractalImageController(FractalWorker worker, CircleArea fractalArea, ImagePanel imagePanel, double pixelScale) {
-        this.worker = worker;
+    public FractalImageController(FractalWorkerController workerController, CircleArea fractalArea, ImagePanel imagePanel, double pixelScale) {
         this.currentImage = null;
+        this.workerController = workerController;
         this.fractalArea = fractalArea;
         this.imagePanel = imagePanel;
         this.pixelScale = pixelScale;
         this.areaUpdateListeners = new ArrayList<>();
 
         imagePanel.addComponentListener(this);
-        worker.addFractalWorkerListener(this);
+        workerController.addFractalWorkerListener(this);
     }
 
     public void addFractalImageUpdateListener(FractalAreaUpdateListener listener) {
@@ -49,7 +48,7 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
 
     public void setFractalArea(CircleArea fractalArea) {
         this.fractalArea = fractalArea;
-        updateImage(true);
+        updateImage();
         notifyFractalImageUpdate(fractalArea);
     }
 
@@ -59,38 +58,44 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
 
     public void setPixelScale(double pixelScale) {
         this.pixelScale = pixelScale;
-        updateImage(true);
+        updateImage();
     }
 
-    private void updateImage(boolean force) {
+    public BufferedImage getCurrentImage() {
+        return currentImage;
+    }
+
+    private void fillImage(BufferedImage image, Color color) {
+        Graphics2D graphics = image.createGraphics();
+        graphics.setPaint(color);
+        graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+    }
+
+    private void updateImage() {
         int width = (int)(imagePanel.getWidth()/pixelScale);
         int height = (int)(imagePanel.getHeight()/pixelScale);
 
-        if (width > 0 && height > 0 &&
-                (force || currentImage == null ||
-                        currentImage.getWidth() != width || currentImage.getHeight() != height)) {
+        if (currentImage == null ||
+                currentImage.getWidth() != width ||
+                currentImage.getHeight() != height) {
             currentImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             imagePanel.setImage(currentImage);
-            worker.setImage(currentImage);
-            worker.setArea(MathUtil.squareToRect(fractalArea, width / (double) height));
+            workerController.updateImage(currentImage);
         }
-    }
 
-    @Override
-    public void fractalUpdated(FractalWorker worker, BufferedImage image) {
-        if (image == currentImage) {
-            SwingUtilities.invokeLater(() -> imagePanel.setImage(currentImage));
+        if (width > 0 && height > 0) {
+            workerController.updateArea(MathUtil.squareToRect(fractalArea, width / (double) height));
         }
     }
 
     @Override
     public void componentResized(ComponentEvent e) {
-        updateImage(false);
+        updateImage();
     }
 
     @Override
     public void componentShown(ComponentEvent e) {
-        updateImage(false);
+        updateImage();
     }
 
     @Override
@@ -98,5 +103,12 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
 
     @Override
     public void componentHidden(ComponentEvent e) { }
+
+    @Override
+    public void fractalUpdated(BufferedImage image) {
+        if (image == currentImage) {
+            SwingUtilities.invokeLater(() -> imagePanel.setImage(currentImage));
+        }
+    }
 
 }

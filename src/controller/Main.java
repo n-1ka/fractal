@@ -1,22 +1,33 @@
 package controller;
 
-import fractal.worker.FractalWorkerMulti;
+import fractal.worker.MultiThreadWorker;
+import fractal.worker.Worker;
+import mandelbrot.MandelbrotFractalTask;
 import view.ImagePanel;
 import view.ZoomableImagePanel;
 import view.main_frame.MainFrame;
 
 import javax.swing.*;
-
 import java.awt.*;
 
 import static controller.FractalConstants.*;
 
 public final class Main {
 
-    private static FractalWorkerMulti buildFractalWorker() {
-        FractalWorkerMulti worker = new FractalWorkerMulti(6, 6);
+    private static Worker buildFractalWorker() {
+        Worker worker = new MultiThreadWorker(8);
         worker.start();
         return worker;
+    }
+
+    private static MandelbrotFractalTask buildInitialTask() {
+        return new MandelbrotFractalTask(
+                null,
+                null,
+                null,
+                10,
+                10
+        );
     }
 
     private static MainFrame buildMainFrame(ImagePanel imagePanel) {
@@ -32,7 +43,7 @@ public final class Main {
     }
 
     public static void main(String[] args) {
-        FractalWorkerMulti worker = buildFractalWorker();
+        Worker worker = buildFractalWorker();
 
         ZoomableImagePanel imagePanel = new ZoomableImagePanel(Color.RED);
         MainFrame mainFrame = buildMainFrame(imagePanel);
@@ -41,9 +52,10 @@ public final class Main {
         timer.setRepeats(true);
         timer.start();
 
-        FractalImageController imageController = new FractalImageController(worker, INITIAL_AREA, imagePanel, INITIAL_PIXEL_SCALE);
+        FractalWorkerController workerController = new FractalWorkerController(worker, buildInitialTask());
+        FractalImageController imageController = new FractalImageController(workerController, INITIAL_AREA, imagePanel, INITIAL_PIXEL_SCALE);
 
-        new FractalController(worker, mainFrame, PAINTERS_REPOSITORY, imageController);
+        new FractalController(mainFrame, workerController, PAINTERS_REPOSITORY, imageController);
         new FractalZoomController(imagePanel, imageController);
     }
 

@@ -1,9 +1,7 @@
 package controller;
 
-import fractal.worker.FractalDepthPainter;
-import fractal.worker.FractalFunction;
-import fractal.worker.FractalWorker;
-import fractal.worker.FractalWorkerMulti;
+import fractal.FractalDepthPainter;
+import fractal.FractalFunction;
 import mandelbrot.MandelbrotFractalEvaluator;
 import math.CircleArea;
 import math.Mfloat;
@@ -23,8 +21,8 @@ import static controller.FractalConstants.*;
 
 public final class FractalController implements MainFrameEventListener {
 
-    private FractalWorker worker;
     private MainFrame frame;
+    private FractalWorkerController workerController;
     private DepthPaintersRepository paintersRepository;
     private FractalImageController imageController;
     private int currentPainterIndex;
@@ -35,10 +33,10 @@ public final class FractalController implements MainFrameEventListener {
         return new MandelbrotFractalEvaluator(maxDepth, edge, painter, function);
     }
 
-    public FractalController(FractalWorkerMulti worker, MainFrame frame,
+    public FractalController(MainFrame frame, FractalWorkerController workerController,
                              DepthPaintersRepository paintersRepository, FractalImageController imageController) {
-        this.worker = worker;
         this.frame = frame;
+        this.workerController = workerController;
         this.paintersRepository = paintersRepository;
         this.imageController = imageController;
         this.currentPainterIndex = 0;
@@ -50,7 +48,7 @@ public final class FractalController implements MainFrameEventListener {
         );
         this.imageController.addFractalImageUpdateListener(this::updateFrameCircleAreaLabels);
 
-        worker.setEvaluator(evaluator);
+        this.workerController.updateEvaluator(evaluator);
 
         frame.addListener(this);
         initFields();
@@ -89,7 +87,7 @@ public final class FractalController implements MainFrameEventListener {
                 );
 
                 imageController.setPixelScale(pixelScale);
-                worker.setEvaluator(newEvaluator);
+                workerController.updateEvaluator(newEvaluator);
             } catch (NumberFormatException e) {
                 System.out.println(String.format("Number field format error: %s", e));
             }
@@ -143,7 +141,7 @@ public final class FractalController implements MainFrameEventListener {
     public void saveImage(File file) {
         new Thread(() -> {
             try {
-                BufferedImage image = worker.getImage();
+                BufferedImage image = imageController.getCurrentImage();
                 ImageIO.write(image, "png", file);
             } catch (IOException e) {
                 e.printStackTrace();

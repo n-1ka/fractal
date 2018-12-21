@@ -1,7 +1,6 @@
 package controller;
 
-import fractal.worker.FractalFunction;
-import mandelbrot.JuliaFractalFunction;
+import fractal.FractalFunction;
 import mandelbrot.MandelbrotFractalFunction;
 import math.CircleArea;
 import math.Number;
