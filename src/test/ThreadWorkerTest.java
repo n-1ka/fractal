@@ -1,12 +1,10 @@
 package test;
 
-import fractal.new_worker.*;
+import fractal.new_worker.MultiThreadWorker;
 import fractal.new_worker.task.AbstractAsyncTask;
 import fractal.new_worker.task.TaskListener;
-import fractal.new_worker.task.Task;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;

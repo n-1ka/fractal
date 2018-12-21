@@ -65,7 +65,11 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
 
     @Override
     public void run() {
-        notifyTaskFinished(runTask());
+        E value = runTask();
+
+        if (value != null) {
+            notifyTaskFinished(value);
+        }
     }
 
     @Override
