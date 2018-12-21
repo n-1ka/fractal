@@ -1,9 +1,9 @@
 package controller;
 
-import fractal.worker.Worker;
-import fractal.worker.task.TaskListener;
-import fractal.FractalEvaluator;
-import mandelbrot.MandelbrotFractalTask;
+import worker.Worker;
+import worker.task.TaskListener;
+import fractal.complex.ComplexFractalEvaluator;
+import fractal.complex.ComplexFractalTask;
 import math.RectArea;
 
 import java.awt.image.BufferedImage;
@@ -14,11 +14,11 @@ import java.util.function.Function;
 public class FractalWorkerController implements TaskListener<BufferedImage> {
 
     private Worker worker;
-    private MandelbrotFractalTask currentTask;
+    private ComplexFractalTask currentTask;
     private List<FractalWorkerListener> workerListeners;
 
     public FractalWorkerController(Worker worker,
-                                   MandelbrotFractalTask initialTask) {
+                                   ComplexFractalTask initialTask) {
         this.worker = worker;
         this.currentTask = initialTask;
         this.workerListeners = new CopyOnWriteArrayList<>();
@@ -26,11 +26,11 @@ public class FractalWorkerController implements TaskListener<BufferedImage> {
         this.currentTask.addListener(this);
     }
 
-    private boolean isTaskValid(MandelbrotFractalTask task) {
+    private boolean isTaskValid(ComplexFractalTask task) {
         return task.getImage() != null && task.getEvaluator() != null && task.getArea() != null;
     }
 
-    private void updateCurrentTask(Function<MandelbrotFractalTask, MandelbrotFractalTask> updateFn) {
+    private void updateCurrentTask(Function<ComplexFractalTask, ComplexFractalTask> updateFn) {
         currentTask.interrupt();
         currentTask = updateFn.apply(currentTask);
         if (isTaskValid(currentTask)) {
@@ -43,7 +43,7 @@ public class FractalWorkerController implements TaskListener<BufferedImage> {
         updateCurrentTask(task -> task.setImage(image));
     }
 
-    public void updateEvaluator(FractalEvaluator evaluator) {
+    public void updateEvaluator(ComplexFractalEvaluator evaluator) {
         updateCurrentTask(task -> task.setEvaluator(evaluator));
     }
 

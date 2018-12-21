@@ -1,4 +1,4 @@
-package fractal.worker.task;
+package worker.task;
 
 import java.util.Collections;
 import java.util.List;

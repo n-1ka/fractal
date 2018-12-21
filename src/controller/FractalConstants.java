@@ -1,7 +1,7 @@
 package controller;
 
 import fractal.FractalFunction;
-import mandelbrot.MandelbrotFractalFunction;
+import fractal.mandelbrot.MandelbrotFractalFunction;
 import math.CircleArea;
 import math.Number;
 import repository.DepthPaintersRepository;

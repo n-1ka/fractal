@@ -1,15 +1,15 @@
-package mandelbrot;
+package fractal.mandelbrot;
 
 import java.awt.Color;
 import java.util.Iterator;
 
 import fractal.FractalFunction;
 import fractal.FractalDepthPainter;
-import fractal.FractalEvaluator;
+import fractal.complex.ComplexFractalEvaluator;
 import math.Mcomplex;
 import math.Mfloat;
 
-public class MandelbrotFractalEvaluator implements FractalEvaluator {
+public class MandelbrotFractalEvaluator implements ComplexFractalEvaluator {
 	
 	private int maxDepth;
 	private Mfloat edge;

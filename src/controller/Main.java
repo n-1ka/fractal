@@ -1,8 +1,8 @@
 package controller;
 
-import fractal.worker.MultiThreadWorker;
-import fractal.worker.Worker;
-import mandelbrot.MandelbrotFractalTask;
+import worker.MultiThreadWorker;
+import worker.Worker;
+import fractal.complex.ComplexFractalTask;
 import view.ImagePanel;
 import view.ZoomableImagePanel;
 import view.main_frame.MainFrame;
@@ -20,8 +20,8 @@ public final class Main {
         return worker;
     }
 
-    private static MandelbrotFractalTask buildInitialTask() {
-        return new MandelbrotFractalTask(
+    private static ComplexFractalTask buildInitialTask() {
+        return new ComplexFractalTask(
                 null,
                 null,
                 null,

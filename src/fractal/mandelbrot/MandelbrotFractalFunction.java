@@ -1,4 +1,4 @@
-package mandelbrot;
+package fractal.mandelbrot;
 
 import fractal.FractalFunction;
 import math.Mcomplex;

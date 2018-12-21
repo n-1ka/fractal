@@ -1,10 +1,10 @@
-package fractal;
+package fractal.complex;
 
 import math.Mcomplex;
 
 import java.awt.*;
 
-public interface FractalEvaluator {
+public interface ComplexFractalEvaluator {
 
 	Color evaluate(Mcomplex value);
 

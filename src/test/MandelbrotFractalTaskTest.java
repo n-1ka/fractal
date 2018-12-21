@@ -1,8 +1,10 @@
 package test;
 
-import fractal.worker.MultiThreadWorker;
-import fractal.worker.Worker;
-import mandelbrot.*;
+import fractal.complex.ComplexFractalTask;
+import fractal.painter.InitialFractalDepthPainter;
+import worker.MultiThreadWorker;
+import worker.Worker;
+import fractal.mandelbrot.*;
 import math.Number;
 import math.RectArea;
 
@@ -22,11 +24,11 @@ public class MandelbrotFractalTaskTest {
     public void run() {
         BufferedImage image = new BufferedImage(1080, 1080, BufferedImage.TYPE_INT_RGB);
 
-        MandelbrotFractalTask task = new MandelbrotFractalTask(image,
+        ComplexFractalTask task = new ComplexFractalTask(image,
                 new MandelbrotFractalEvaluator(
                         10000,
                         Number.buildFloat(2.0),
-                        new DummyFractalDepthPainter(),
+                        new InitialFractalDepthPainter(),
                         new MandelbrotFractalFunction()
                 ),
                 new RectArea(

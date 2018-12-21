@@ -1,10 +1,8 @@
-package mandelbrot;
+package fractal.painter;
 
-import java.awt.Color;
+import java.awt.*;
 
-import fractal.FractalDepthPainter;
-
-public class DummyFractalDepthPainter implements FractalDepthPainter {
+public class InitialFractalDepthPainter extends ColorGradientFractalDepthPainter {
 	
 	private static final Color[] COLORS = new Color[] {
 			new Color(66, 30, 15),
@@ -26,11 +24,18 @@ public class DummyFractalDepthPainter implements FractalDepthPainter {
 	};
 
 	@Override
-	public Color generateColor(int depth, int maxDepth) {
-		if (depth == maxDepth)
-			return Color.BLACK;
-		else
-			return COLORS[depth % COLORS.length];
+	Color[] getColors() {
+		return COLORS;
+	}
+
+	@Override
+	int getGradientSize() {
+		return 3;
+	}
+
+	@Override
+	Color getTerminalColor() {
+		return Color.BLACK;
 	}
 
 }

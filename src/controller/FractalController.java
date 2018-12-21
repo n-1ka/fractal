@@ -2,7 +2,7 @@ package controller;
 
 import fractal.FractalDepthPainter;
 import fractal.FractalFunction;
-import mandelbrot.MandelbrotFractalEvaluator;
+import fractal.mandelbrot.MandelbrotFractalEvaluator;
 import math.CircleArea;
 import math.Mfloat;
 import math.Number;

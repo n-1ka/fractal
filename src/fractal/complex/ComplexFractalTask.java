@@ -1,7 +1,6 @@
-package mandelbrot;
+package fractal.complex;
 
-import fractal.worker.task.AbstractAsyncTask;
-import fractal.FractalEvaluator;
+import worker.task.AbstractAsyncTask;
 import math.Mcomplex;
 import math.Mfloat;
 import math.Number;
@@ -13,20 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class MandelbrotFractalTask extends AbstractAsyncTask<BufferedImage, BufferedImage> {
+public class ComplexFractalTask extends AbstractAsyncTask<BufferedImage, BufferedImage> {
 
     private BufferedImage image;
-    private FractalEvaluator evaluator;
+    private ComplexFractalEvaluator evaluator;
     private RectArea area;
 
     private int splitRowSize;
     private int splitColSize;
 
-    public MandelbrotFractalTask(BufferedImage image,
-                                 FractalEvaluator evaluator,
-                                 RectArea area,
-                                 int splitRowSize,
-                                 int splitColSize) {
+    public ComplexFractalTask(BufferedImage image,
+                              ComplexFractalEvaluator evaluator,
+                              RectArea area,
+                              int splitRowSize,
+                              int splitColSize) {
         this.image = image;
         this.evaluator = evaluator;
         this.area = area;
@@ -39,7 +38,7 @@ public class MandelbrotFractalTask extends AbstractAsyncTask<BufferedImage, Buff
         return image;
     }
 
-    public FractalEvaluator getEvaluator() {
+    public ComplexFractalEvaluator getEvaluator() {
         return evaluator;
     }
 
@@ -55,8 +54,8 @@ public class MandelbrotFractalTask extends AbstractAsyncTask<BufferedImage, Buff
         return splitColSize;
     }
 
-    private MandelbrotFractalTask copy(Consumer<MandelbrotFractalTask> applyFn) {
-        MandelbrotFractalTask res = new MandelbrotFractalTask(
+    private ComplexFractalTask copy(Consumer<ComplexFractalTask> applyFn) {
+        ComplexFractalTask res = new ComplexFractalTask(
                 image, evaluator, area,
                 splitRowSize, splitColSize
         );
@@ -64,23 +63,23 @@ public class MandelbrotFractalTask extends AbstractAsyncTask<BufferedImage, Buff
         return res;
     }
 
-    public MandelbrotFractalTask setImage(BufferedImage image) {
+    public ComplexFractalTask setImage(BufferedImage image) {
         return copy(task -> task.image = image);
     }
 
-    public MandelbrotFractalTask setEvaluator(FractalEvaluator evaluator) {
+    public ComplexFractalTask setEvaluator(ComplexFractalEvaluator evaluator) {
         return copy(task -> task.evaluator = evaluator);
     }
 
-    public MandelbrotFractalTask setArea(RectArea area) {
+    public ComplexFractalTask setArea(RectArea area) {
         return copy(task -> task.area = area);
     }
 
-    public MandelbrotFractalTask setSplitRowSize(int splitRowSize) {
+    public ComplexFractalTask setSplitRowSize(int splitRowSize) {
         return copy(task -> task.splitRowSize = splitRowSize);
     }
 
-    public MandelbrotFractalTask setSplitColSize(int splitColSize) {
+    public ComplexFractalTask setSplitColSize(int splitColSize) {
         return copy(task -> task.splitColSize = splitColSize);
     }
 
@@ -144,7 +143,7 @@ public class MandelbrotFractalTask extends AbstractAsyncTask<BufferedImage, Buff
                         areaY0, areaY0.add(areaHeight)
                 );
 
-                subTasks.add(new MandelbrotFractalTask(subImage, evaluator, areaIJ, splitRowSize, splitColSize));
+                subTasks.add(new ComplexFractalTask(subImage, evaluator, areaIJ, splitRowSize, splitColSize));
             }
         }
 

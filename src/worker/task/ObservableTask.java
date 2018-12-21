@@ -1,4 +1,4 @@
-package fractal.worker.task;
+package worker.task;
 
 public interface ObservableTask<E> {
 

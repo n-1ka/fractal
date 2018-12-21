@@ -107,7 +107,7 @@ public class FractalImageController implements ComponentListener, FractalWorkerL
     @Override
     public void fractalUpdated(BufferedImage image) {
         if (image == currentImage) {
-            SwingUtilities.invokeLater(() -> imagePanel.setImage(currentImage));
+            SwingUtilities.invokeLater(() -> imagePanel.setImage(image));
         }
     }
 

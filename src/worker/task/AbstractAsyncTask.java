@@ -1,4 +1,4 @@
-package fractal.worker.task;
+package worker.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
     public AbstractAsyncTask() {
         this.listeners = new CopyOnWriteArrayList<>();
         this.interrupted = false;
-        this.subTasks = null;
+        this.subTasks = new CopyOnWriteArrayList<>();
         this.result = new AtomicReference<>(null);
     }
 
@@ -87,13 +87,13 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
     }
 
     @Override
-    public synchronized List<Task> split() {
-        if (subTasks == null) {
-            subTasks = splitTask();
-        }
+    public List<Task> split() {
+        List<AbstractAsyncTask<V, ?>> subTasks = splitTask();
 
         SubtaskObserver subtaskObserver = new SubtaskObserver(subTasks.size());
         subTasks.forEach(t -> t.addListener(subtaskObserver));
+
+        this.subTasks.addAll(subTasks);
 
         return new ArrayList<>(subTasks);
     }
@@ -101,10 +101,7 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
     @Override
     public synchronized void interrupt() {
         this.interrupted = true;
-
-        if (subTasks != null) {
-            subTasks.forEach(AbstractAsyncTask::interrupt);
-        }
+        subTasks.forEach(AbstractAsyncTask::interrupt);
     }
 
     protected boolean isInterrupted() {

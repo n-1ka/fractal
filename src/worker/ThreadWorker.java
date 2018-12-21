@@ -1,6 +1,6 @@
-package fractal.worker;
+package worker;
 
-import fractal.worker.task.Task;
+import worker.task.Task;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

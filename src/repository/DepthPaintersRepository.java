@@ -1,8 +1,8 @@
 package repository;
 
 import fractal.FractalDepthPainter;
-import mandelbrot.DummyFractalDepthPainter;
-import mandelbrot.GrayFractalDepthPainter;
+import fractal.painter.InitialFractalDepthPainter;
+import fractal.painter.GrayFractalDepthPainter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class DepthPaintersRepository {
 
     static {
         DEPTH_PAINTERS = new ArrayList<>();
-        DEPTH_PAINTERS.add(new Painter("default", new DummyFractalDepthPainter()));
+        DEPTH_PAINTERS.add(new Painter("default", new InitialFractalDepthPainter()));
         DEPTH_PAINTERS.add(new Painter("gray", new GrayFractalDepthPainter()));
 
         NAMES = new ArrayList<>();
