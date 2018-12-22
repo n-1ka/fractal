@@ -39,15 +39,15 @@ public class FractalWorkerController implements TaskListener<BufferedImage> {
         }
     }
 
-    public void updateImage(BufferedImage image) {
+    public synchronized void updateImage(BufferedImage image) {
         updateCurrentTask(task -> task.setImage(image));
     }
 
-    public void updateEvaluator(ComplexFractalEvaluator evaluator) {
+    public synchronized void updateEvaluator(ComplexFractalEvaluator evaluator) {
         updateCurrentTask(task -> task.setEvaluator(evaluator));
     }
 
-    public void updateArea(RectArea area) {
+    public synchronized void updateArea(RectArea area) {
         updateCurrentTask(task -> task.setArea(area));
     }
 

@@ -1,11 +1,11 @@
 package controller;
 
-import worker.MultiThreadWorker;
-import worker.Worker;
 import fractal.complex.ComplexFractalTask;
 import view.ImagePanel;
 import view.ZoomableImagePanel;
 import view.main_frame.MainFrame;
+import worker.MultiThreadWorker;
+import worker.Worker;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +16,7 @@ public final class Main {
 
     private static Worker buildFractalWorker() {
         Worker worker = new MultiThreadWorker(8);
+//        Worker worker = new ThreadWorker();
         worker.start();
         return worker;
     }

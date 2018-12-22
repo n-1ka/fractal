@@ -10,8 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E> {
 
     private List<TaskListener<E>> listeners;
-    private boolean interrupted;
-    private List<AbstractAsyncTask<V, ?>> subTasks;
+    private AtomicReference<Boolean> interrupted;
     private AtomicReference<E> result;
 
     private class SubtaskObserver implements TaskListener<V> {
@@ -41,8 +40,7 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
 
     public AbstractAsyncTask() {
         this.listeners = new CopyOnWriteArrayList<>();
-        this.interrupted = false;
-        this.subTasks = new CopyOnWriteArrayList<>();
+        this.interrupted = new AtomicReference<>(false);
         this.result = new AtomicReference<>(null);
     }
 
@@ -89,23 +87,21 @@ public abstract class AbstractAsyncTask<E, V> implements Task, ObservableTask<E>
     @Override
     public List<Task> split() {
         List<AbstractAsyncTask<V, ?>> subTasks = splitTask();
+        subTasks.forEach(subTask -> subTask.interrupted = this.interrupted);
 
         SubtaskObserver subtaskObserver = new SubtaskObserver(subTasks.size());
         subTasks.forEach(t -> t.addListener(subtaskObserver));
-
-        this.subTasks.addAll(subTasks);
 
         return new ArrayList<>(subTasks);
     }
 
     @Override
     public synchronized void interrupt() {
-        this.interrupted = true;
-        subTasks.forEach(AbstractAsyncTask::interrupt);
+        this.interrupted.set(true);
     }
 
     protected boolean isInterrupted() {
-        return interrupted;
+        return interrupted.get();
     }
 
 
