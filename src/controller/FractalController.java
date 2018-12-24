@@ -140,8 +140,7 @@ public final class FractalController implements MainFrameEventListener {
 
     @Override
     public void fractalPainterChanged(String painterName) {
-        System.out.println("Painter changed to : " + painterName);
-        // TODO: Implement
+        // Useless for now
     }
 
     @Override

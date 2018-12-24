@@ -1,10 +1,10 @@
 package fractal.complex;
 
-import worker.task.AbstractAsyncTask;
 import math.Mcomplex;
 import math.Mfloat;
 import math.Number;
 import math.RectArea;
+import worker.task.AbstractAsyncTask;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,20 +18,20 @@ public class ComplexFractalTask extends AbstractAsyncTask<BufferedImage, Buffere
     private ComplexFractalEvaluator evaluator;
     private RectArea area;
 
-    private int splitRowSize;
-    private int splitColSize;
+    private int subTaskHeight;
+    private int subTaskWidth;
 
     public ComplexFractalTask(BufferedImage image,
                               ComplexFractalEvaluator evaluator,
                               RectArea area,
-                              int splitRowSize,
-                              int splitColSize) {
+                              int subTaskHeight,
+                              int subTaskWidth) {
         this.image = image;
         this.evaluator = evaluator;
         this.area = area;
 
-        this.splitRowSize = splitRowSize;
-        this.splitColSize = splitColSize;
+        this.subTaskHeight = subTaskHeight;
+        this.subTaskWidth = subTaskWidth;
     }
 
     public BufferedImage getImage() {
@@ -46,18 +46,18 @@ public class ComplexFractalTask extends AbstractAsyncTask<BufferedImage, Buffere
         return area;
     }
 
-    public int getSplitRowSize() {
-        return splitRowSize;
+    public int getSubTaskHeight() {
+        return subTaskHeight;
     }
 
-    public int getSplitColSize() {
-        return splitColSize;
+    public int getSubTaskWidth() {
+        return subTaskWidth;
     }
 
     private ComplexFractalTask copy(Consumer<ComplexFractalTask> applyFn) {
         ComplexFractalTask res = new ComplexFractalTask(
                 image, evaluator, area,
-                splitRowSize, splitColSize
+                subTaskHeight, subTaskWidth
         );
         applyFn.accept(res);
         return res;
@@ -75,12 +75,12 @@ public class ComplexFractalTask extends AbstractAsyncTask<BufferedImage, Buffere
         return copy(task -> task.area = area);
     }
 
-    public ComplexFractalTask setSplitRowSize(int splitRowSize) {
-        return copy(task -> task.splitRowSize = splitRowSize);
+    public ComplexFractalTask setSubTaskHeight(int subTaskHeight) {
+        return copy(task -> task.subTaskHeight = subTaskHeight);
     }
 
-    public ComplexFractalTask setSplitColSize(int splitColSize) {
-        return copy(task -> task.splitColSize = splitColSize);
+    public ComplexFractalTask setSubTaskWidth(int subTaskWidth) {
+        return copy(task -> task.subTaskWidth = subTaskWidth);
     }
 
     @Override
@@ -118,33 +118,72 @@ public class ComplexFractalTask extends AbstractAsyncTask<BufferedImage, Buffere
         }
     }
 
+    private static class SubImage {
+        private int x, y, w, h;
+        private BufferedImage image;
+        private RectArea area;
+
+        public SubImage(int x, int y, int w, int h, BufferedImage image, RectArea area) {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+            this.image = image;
+            this.area = area;
+        }
+    }
+
+    private RectArea getSubArea(int x, int y, int w, int h) {
+        y = image.getHeight() - y - h;
+
+        Mfloat areaW = area.getWidth().div(image.getWidth());
+        Mfloat areaH = area.getHeight().div(image.getHeight());
+
+        Mfloat areaX0 = area.getX0().add(areaW.mul(x));
+        Mfloat areaY0 = area.getY0().add(areaH.mul(y));
+        Mfloat areaX1 = areaX0.add(areaW.mul(w));
+        Mfloat areaY1 = areaY0.add(areaH.mul(h));
+
+        return new RectArea(
+                areaX0, areaX1,
+                areaY0, areaY1
+        );
+    }
+
+    private List<SubImage> generateSubImages() {
+        List<SubImage> res = new ArrayList<>();
+
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int dx = subTaskWidth;
+        int dy = subTaskHeight;
+
+        int x = 0;
+        while (x < width) {
+            int y = 0;
+            while (y < height) {
+                int w = Math.min(dx, width - x);
+                int h = Math.min(dy, height - y);
+
+                BufferedImage subimage = image.getSubimage(x, y, w, h);
+                RectArea subArea = getSubArea(x, y, w, h);
+
+                res.add(new SubImage(x, y, w, h, subimage, subArea));
+
+                y += dy;
+            }
+            x += dx;
+        }
+
+        return res;
+    }
+
     @Override
     protected List<AbstractAsyncTask<BufferedImage, ?>> splitTask() {
         List<AbstractAsyncTask<BufferedImage, ?>> subTasks = new ArrayList<>();
 
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int rows = Math.min(splitRowSize, height);
-        int cols = Math.min(splitColSize, width);
-        int w = width/cols;
-        int h = height/rows;
-
-        Mfloat areaWidth = area.getWidth().div(cols);
-        Mfloat areaHeight = area.getHeight().div(rows);
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                BufferedImage subImage = image.getSubimage(j * w, (rows - i - 1) * h, w, h);
-
-                Mfloat areaX0 = area.getX0().add(areaWidth.mul(j));
-                Mfloat areaY0 = area.getY0().add(areaHeight.mul(i));
-                RectArea areaIJ = new RectArea(
-                        areaX0, areaX0.add(areaWidth),
-                        areaY0, areaY0.add(areaHeight)
-                );
-
-                subTasks.add(new ComplexFractalTask(subImage, evaluator, areaIJ, splitRowSize, splitColSize));
-            }
+        for (SubImage subImage : generateSubImages()) {
+            subTasks.add(new ComplexFractalTask(subImage.image, evaluator, subImage.area, subTaskHeight, subTaskWidth));
         }
 
         return subTasks;
