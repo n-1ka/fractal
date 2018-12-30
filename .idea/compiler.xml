@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="com.nikartix.com.nikartix.fractal.fractal.main" target="1.8" />
+      <module name="com.nikartix.com.nikartix.fractal.fractal.test" target="1.8" />
+      <module name="com.nikartix.fractal.main" target="1.8" />
+      <module name="com.nikartix.fractal.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
