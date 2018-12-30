@@ -1,4 +1,6 @@
-package com.nikartix.fractal.math;
+package com.nikartix.fractal.math.java;
+
+import com.nikartix.fractal.math.Mfloat;
 
 public class JavaFloat implements Mfloat {
 	
