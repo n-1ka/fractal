@@ -143,12 +143,31 @@ public final class FractalController implements MainFrameEventListener {
         // Useless for now
     }
 
+    private String fileExtension(String fileName) {
+        int periondIndex = fileName.lastIndexOf('.');
+        if (periondIndex > 0) {
+            return fileName.substring(periondIndex + 1);
+        } else {
+            return "";
+        }
+    }
+
     @Override
     public void saveImage(File file) {
         new Thread(() -> {
             try {
                 BufferedImage image = imageController.getCurrentImage();
-                ImageIO.write(image, "png", file);
+                switch (fileExtension(file.getName())) {
+                    case "png":
+                        ImageIO.write(image, "png", file);
+                        break;
+                    case "jpg": case "jpeg":
+                        ImageIO.write(image, "jpg", file);
+                        break;
+                    default:
+                        System.out.println("Invalid file extension");
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
