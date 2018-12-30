@@ -20,6 +20,10 @@ public class ApfloatFloat implements Mfloat {
         this(String.format("%f", value));
     }
 
+    public Apfloat getValue() {
+        return value;
+    }
+
     @Override
     public Mfloat add(Mfloat f) {
         return new ApfloatFloat(value.add(((ApfloatFloat) f).value));

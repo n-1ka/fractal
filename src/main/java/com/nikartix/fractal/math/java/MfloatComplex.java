@@ -1,4 +1,7 @@
-package com.nikartix.fractal.math;
+package com.nikartix.fractal.math.java;
+
+import com.nikartix.fractal.math.Mcomplex;
+import com.nikartix.fractal.math.Mfloat;
 
 public class MfloatComplex implements Mcomplex {
 	
