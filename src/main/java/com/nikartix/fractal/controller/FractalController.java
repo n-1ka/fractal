@@ -1,5 +1,6 @@
 package com.nikartix.fractal.controller;
 
+import com.nikartix.fractal.config.model.FractalParams;
 import com.nikartix.fractal.fractal.FractalDepthPainter;
 import com.nikartix.fractal.fractal.FractalFunction;
 import com.nikartix.fractal.fractal.mandelbrot.MandelbrotFractalEvaluator;
@@ -26,6 +27,7 @@ public final class FractalController implements MainFrameEventListener {
     private DepthPaintersRepository paintersRepository;
     private FractalImageController imageController;
     private MandelbrotFractalEvaluator currentEvaluator;
+    private FractalParams params;
 
     private static MandelbrotFractalEvaluator buildEvaluator(int maxDepth, Mfloat edge,
                                                              FractalDepthPainter painter,
@@ -34,14 +36,17 @@ public final class FractalController implements MainFrameEventListener {
     }
 
     public FractalController(MainFrame frame, FractalWorkerController workerController,
-                             DepthPaintersRepository paintersRepository, FractalImageController imageController) {
+                             DepthPaintersRepository paintersRepository, FractalImageController imageController,
+                             FractalParams params) {
         this.frame = frame;
         this.workerController = workerController;
         this.paintersRepository = paintersRepository;
         this.imageController = imageController;
+        this.params = params;
+
         MandelbrotFractalEvaluator initialEvaluator = buildEvaluator(
-                INITIAL_MAX_DEPTH,
-                Number.buildFloat(INITIAL_EDGE),
+                params.getMaxDepth(),
+                Number.buildFloat(params.getEdge()),
                 paintersRepository.getPainter(0),
                 INITIAL_FRACTAL_FUNCTION
         );
@@ -130,7 +135,7 @@ public final class FractalController implements MainFrameEventListener {
     public void resetZoomClicked() {
         SwingUtilities.invokeLater(() -> {
             try {
-                updateCircleArea(INITIAL_AREA);
+                updateCircleArea(params.getInitialArea().toCircleArea());
             } catch (NumberFormatException e) {
                 System.out.println(String.format("Number format error: %s", e));
             }
