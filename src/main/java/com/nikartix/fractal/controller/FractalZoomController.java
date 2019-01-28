@@ -8,13 +8,10 @@ import com.nikartix.fractal.view.ZoomableImagePanel;
 
 public class FractalZoomController implements ImageZoomListener {
 
-    private ZoomableImagePanel panel;
     private FractalImageController imageController;
 
-    public FractalZoomController(ZoomableImagePanel panel, FractalImageController imageController) {
-        this.panel = panel;
+    public FractalZoomController(FractalImageController imageController) {
         this.imageController = imageController;
-        this.panel.addImageZoomListener(this);
     }
 
     @Override

@@ -56,8 +56,11 @@ public final class Main {
         FractalWorkerController workerController = new FractalWorkerController(worker, buildInitialTask());
         FractalImageController imageController = new FractalImageController(workerController, INITIAL_AREA, imagePanel, INITIAL_PIXEL_SCALE);
 
+        FractalZoomController zoomController = new FractalZoomController(imageController);
+        imagePanel.addImageZoomListener(zoomController);
+
         new FractalController(mainFrame, workerController, PAINTERS_REPOSITORY, imageController);
-        new FractalZoomController(imagePanel, imageController);
+
     }
 
 }
