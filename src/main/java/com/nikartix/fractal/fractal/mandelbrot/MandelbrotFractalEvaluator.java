@@ -1,13 +1,13 @@
 package com.nikartix.fractal.fractal.mandelbrot;
 
-import java.awt.Color;
-import java.util.Iterator;
-
-import com.nikartix.fractal.fractal.FractalFunction;
 import com.nikartix.fractal.fractal.FractalDepthPainter;
+import com.nikartix.fractal.fractal.FractalFunction;
 import com.nikartix.fractal.fractal.complex.ComplexFractalEvaluator;
 import com.nikartix.fractal.math.Mcomplex;
 import com.nikartix.fractal.math.Mfloat;
+
+import java.awt.*;
+import java.util.Iterator;
 
 public class MandelbrotFractalEvaluator implements ComplexFractalEvaluator {
 	

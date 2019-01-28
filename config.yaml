@@ -6,7 +6,7 @@ threading:
 
 fractal:
   params:
-    max_depth: 1000
+    max_depth: 500
     edge: 2
 
     initial_area:
@@ -14,6 +14,6 @@ fractal:
       center_y: 0.0
       diameter: 4.0
 
-    pixel_scale: 0.5
+    pixel_scale: 1.0
     image_refresh_rate_ms: 500
 
