@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Fractal.iml" filepath="$PROJECT_DIR$/Fractal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.nikartix.com.nikartix.fractal.fractal.iml" filepath="$PROJECT_DIR$/.idea/modules/com.nikartix.com.nikartix.fractal.fractal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.nikartix.com.nikartix.fractal.fractal.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.nikartix.com.nikartix.fractal.fractal.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.nikartix.com.nikartix.fractal.fractal.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.nikartix.com.nikartix.fractal.fractal.test.iml" />
     </modules>
   </component>
 </project>

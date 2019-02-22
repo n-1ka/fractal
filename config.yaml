@@ -1,0 +1,19 @@
+
+threading:
+  n_threads: 16
+  task_window_height: 100
+  task_window_width: 100
+
+fractal:
+  params:
+    max_depth: 500
+    edge: 2
+
+    initial_area:
+      center_x: 0.0
+      center_y: 0.0
+      diameter: 4.0
+
+    pixel_scale: 1.0
+    image_refresh_rate_ms: 500
+
